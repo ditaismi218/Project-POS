@@ -10,13 +10,15 @@ class Pembayaran extends Model
     use HasFactory;
 
     protected $table = 'pembayaran';
-
+    
     protected $fillable = [
         'penjualan_id',
         'jumlah_bayar',
+        'kembalian',
         'metode_pembayaran'
     ];
 
+    // Relasi ke Penjualan
     public function penjualan()
     {
         return $this->belongsTo(Penjualan::class);

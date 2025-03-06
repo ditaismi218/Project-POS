@@ -29,7 +29,7 @@
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>NAMA KATEGORI PRODUK</th>
+                            <th>NAMA KATEGORIPRODUK</th>
                             <th>AKSI</th>
                         </tr>
                     </thead>

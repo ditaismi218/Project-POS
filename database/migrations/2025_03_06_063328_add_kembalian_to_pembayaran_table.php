@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('produk', function (Blueprint $table) {
-            $table->renameColumn('id_kategori', 'kategori_id');
-        });
+        Schema::table('pembayaran', function (Blueprint $table) {
+            $table->decimal('kembalian', 15, 2)->default(0)->after('jumlah_bayar');
+        });        
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('produk', function (Blueprint $table) {
-            $table->renameColumn('kategori_id', 'id_kategori');
+        Schema::table('pembayaran', function (Blueprint $table) {
+            //
         });
     }
 };

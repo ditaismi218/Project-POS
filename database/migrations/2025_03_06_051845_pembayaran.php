@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('loyalty_points', function (Blueprint $table) {
+        Schema::create('pembayaran', function (Blueprint $table) {
             $table->id();
-            
-            $table->foreignId('member_id')->constrained('member')->onDelete('cascade');
             $table->foreignId('penjualan_id')->constrained('penjualan')->onDelete('cascade');
-
-            $table->integer('point_didapat');
+            $table->decimal('jumlah_bayar', 15, 2);
+            $table->enum('metode_pembayaran', ['cash', 'debit', 'kredit', 'ewallet']);
             $table->timestamps();
+
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('loyalty_points');
+        Schema::dropIfExists('pembayaran');
     }
 };

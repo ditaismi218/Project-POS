@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Produk;
 use App\Models\KategoriProduk;
+use Illuminate\Support\Facades\Storage;
 
 class ProdukController extends Controller
 {
@@ -20,10 +21,15 @@ class ProdukController extends Controller
             'kode_barang' => 'required|string|unique:produk,kode_barang',
             'nama_barang' => 'required|string|max:255',
             'kategori_id' => 'required|exists:kategori_produk,id',
-            'harga_beli' => 'required|numeric|min:0',
-            'harga_jual' => 'required|numeric|min:0',
+           
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
             'satuan' => 'required|string|max:50',
         ]);
+
+        // Simpan gambar ke storage jika ada
+        if ($request->hasFile('gambar')) {
+            $validated['gambar'] = $request->file('gambar')->store('produk', 'public');
+        }
 
         Produk::create($validated);
         return redirect()->route('produk.index')->with('success', 'Produk berhasil ditambahkan');
@@ -33,28 +39,48 @@ class ProdukController extends Controller
     public function update(Request $request, $id)
     {
         $produk = Produk::findOrFail($id);
-        $produk->update([
-            'kode_barang' => $request->kode_barang,
-            'nama_barang' => $request->nama_barang,
-            'kategori_id' => $request->kategori_id,
-            'harga_beli' => $request->harga_beli,
-            'harga_jual' => $request->harga_jual,
-            'satuan' => $request->satuan,
+    
+        $validated = $request->validate([
+            'kode_barang' => 'required|string|unique:produk,kode_barang,' . $id,
+            'nama_barang' => 'required|string|max:255',
+            'kategori_id' => 'required|exists:kategori_produk,id',
+          
+            
+            'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
+            'satuan' => 'required|string|max:50',
         ]);
     
+        // Cek apakah ada gambar baru
+        if ($request->hasFile('gambar')) {
+            // Hapus gambar lama jika ada
+            if ($produk->gambar) {
+                Storage::disk('public')->delete($produk->gambar);
+            }
+            // Simpan gambar baru
+            $validated['gambar'] = $request->file('gambar')->store('produk', 'public');
+        }
+    
+        $produk->update($validated);
+    
         return redirect()->route('produk.index')->with('success', 'Produk berhasil diperbarui!');
-    }
+    }    
     
 
     // Menghapus produk
     public function destroy($id)
     {
-        $product = Produk::find($id);
-        if (!$product) {
+        $produk = Produk::find($id);
+        if (!$produk) {
             return redirect()->route('produk.index')->with('error', 'Produk tidak ditemukan');
         }
-
-        $product->delete();
+    
+        // Hapus gambar dari storage jika ada
+        if ($produk->gambar) {
+            Storage::disk('public')->delete($produk->gambar);
+        }
+    
+        $produk->delete();
         return redirect()->route('produk.index')->with('success', 'Produk berhasil dihapus');
     }
+    
 }

@@ -16,11 +16,11 @@ class AuthController extends Controller
             'email' => 'required|string|email',
             'password' => 'required|string|min:6',
         ]);
-
+        
         // Coba login
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $request->session()->regenerate(); // Regenerate session untuk keamanan
-            return redirect()->intended('/dashboard'); // Redirect jika sukses
+            return redirect('/dashboard'); // Redirect jika sukses
         }
 
         // Jika gagal, kembali ke login dengan pesan error

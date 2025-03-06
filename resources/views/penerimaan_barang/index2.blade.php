@@ -1,12 +1,12 @@
 @extends('layouts.layout')
-@section('title', 'Manajemen Produk')
+@section('title', 'Penerimaan Barang')
 
 @section('content')
 
     <div class="page-body">
         <div class="mb-4 d-flex justify-content-between align-items-center">
             <button class="btn btn-primary" id="createProductButton">
-                <i class="fa fa-plus"></i> Tambah Produk
+                <i class="fa fa-plus"></i> Tambah Penerimaan Barang
             </button>
         </div>
 
@@ -14,53 +14,63 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
         <div class="card">
-            <h5 class="card-header text-md-start text-center">Tabel Produk</h5>
+            <h5 class="card-header text-md-start text-center">Tabel Penerimaan Barang</h5>
             <div class="card-datatable">
                 <table class="dt-scrollableTable table table-bordered">
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Kode</th>
-                            <th>Nama Barang</th>
-                            <th>Kategori</th>
-                            <th>Gambar</th>
-                            <th>Satuan</th>
+                            <th>Supplier</th>
+                            <th>Produk</th>
+                            <th>Kode Penerimaan</th>
+                            <th>Tanggal Masuk</th>
+                            <th>Harga Jual</th>
+                            <th>Harga Satuan</th>
+                            <th>Qty</th>
+                            <th>Harga Total</th>
+                            <th>Expired Date</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($products  as $index => $item)
+                        @foreach ($penerimaan as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $item->kode_barang }}</td>
-                                <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->kategori->nama_kategori }}</td>
-                                <td>
-                                    @if ($item->gambar)
-                                        <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->nama_barang }}" width="50">
-                                    @else
-                                        <span class="text-muted">Tidak ada gambar</span>
-                                    @endif
-                                </td>
-                                <td>{{ $item->satuan }}</td>
+                                <td>{{ $item->supplier->nama }}</td>
+                                <td>{{ $item->produk->nama_barang }}</td>
+                                <td>{{ $item->kode_penerimaan }}</td>
+                                <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
+                                <td>Rp {{ number_format($item->harga_jual, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
+                                <td>{{ $item->qty }}</td>
+                                <td>Rp {{ number_format($item->harga_total, 0, ',', '.') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($item->expired_date)->format('d-m-Y') }}</td>
                                 <td>
                                     <button class="btn btn-warning edit-button" 
                                         data-id="{{ $item->id }}"
-                                        data-kode="{{ $item->kode_barang }}" 
-                                        data-nama="{{ $item->nama_barang }}"
-                                        data-kategori="{{ $item->kategori_id }}" 
-                                        data-gambar="{{ $item->gambar }}"
-                                        data-satuan="{{ $item->satuan }}"
+                                        data-supplier="{{ $item->supplier_id }}" 
+                                        data-produk="{{ $item->produk_id }}"
+                                        data-kode="{{ $item->kode_penerimaan }}" 
+                                        data-tgl="{{ $item->tgl_masuk }}"
+                                        data-jual="{{ $item->harga_jual}}"
+                                        data-satuan="{{ $item->harga_satuan}}"
+                                        data-qty="{{ $item->qty}}"
+                                        data-total="{{ $item->harga_total}}"
+                                        data-expired="{{ $item->expired_date}}"
                                         data-bs-toggle="modal" data-bs-target="#productModal">
                                         <i class="bx bx-edit"></i>
                                     </button>
-
-                                    <button class="btn btn-danger delete-button" data-id="{{ $item->id }}" data-nama="{{ $item->nama_barang }}">
+                
+                                    <button class="btn btn-danger delete-button" data-id="{{ $item->id }}">
                                         <i class="bx bx-trash"></i>
                                     </button>
-
-                                    <form id="delete-form-{{ $item->id }}" action="{{ route('produk.destroy', $item->id) }}" method="POST" style="display:none;">
+                
+                                    <form id="delete-form-{{ $item->id }}" action="{{ route('penerimaan_barang.destroy', $item->id) }}" method="POST" style="display:none;">
                                         @csrf
                                         @method('DELETE')
                                     </form>
@@ -79,56 +89,67 @@
         <div class="modal-dialog" style="max-width: 500px;">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Tambah Produk</h5>
+                    <h5 class="modal-title" id="modalTitle">Tambah Penerimaan Barang</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="productForm" method="POST" enctype="multipart/form-data">
+                    <form id="productForm" method="POST" enctype="multipart/form-data" data-action="{{ route('penerimaan_barang.store') }}">
                         @csrf
                         <input type="hidden" id="method" name="_method" value="POST">
 
                         <div class="mb-3">
-                            <label for="kode_barang" class="form-label">Kode Barang</label>
-                            <input type="text" class="form-control" id="kode_barang" name="kode_barang" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="nama_barang" class="form-label">Nama Barang</label>
-                            <input type="text" class="form-control" id="nama_barang" name="nama_barang" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="kategori_id" class="form-label">Kategori</label>
-                            <select class="form-control" id="kategori_id" name="kategori_id" required>
-                                @foreach ($categories as $kategori)
-                                    <option value="{{ $kategori->id }}">{{ $kategori->nama_kategori }}</option>
+                            <label for="supplier_id" class="form-label">Supplier</label>
+                            <select class="form-control" id="supplier_id" name="supplier_id" required>
+                                <option value="" disabled selected>Pilih Supplier</option>
+                                @foreach ($suppliers as $supplier)
+                                    <option value="{{ $supplier->id }}">{{ $supplier->nama_supplier }}</option>
                                 @endforeach
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="gambar" class="form-label">Gambar</label>
-                            <input type="file" class="form-control" id="gambar" name="gambar" accept="image/*">
-                            <img id="gambarPreview" src="" alt="Preview" width="100" class="mt-2 d-none">
+                            <label for="produk_id" class="form-label">Produk</label>
+                            <select class="form-control" id="produk_id" name="produk_id" required>
+                                <option value="" disabled selected>Pilih Produk</option>
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}">{{ $product->nama_barang }}</option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="satuan">Satuan</label>
-                            <select class="form-control" id="satuan" name="satuan" required>
-                                <option value="pcs">Pcs</option>
-                                <option value="pack">Pack</option>
-                                <option value="box">Box</option>
-                                <option value="lusin">Lusin</option>
-                                <option value="gram">Gram</option>
-                                <option value="kg">Kg</option>
-                                <option value="ml">Ml</option>
-                                <option value="liter">Liter</option>
-                                <option value="meter">Meter</option>
-                                <option value="botol">Botol</option>
-                                <option value="kaleng">Kaleng</option>
-                                <option value="sachet">Sachet</option>
-                                <option value="strip">Strip</option>
-                            </select>
+                            <label for="kode_penerimaan" class="form-label">Kode Penerimaan</label>
+                            <input type="text" class="form-control" id="kode_penerimaan" name="kode_penerimaan" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="tgl_masuk" class="form-label">Tanggal Masuk</label>
+                            <input type="date" class="form-control" id="tgl_masuk" name="tgl_masuk" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="harga_jual" class="form-label">Harga Jual</label>
+                            <input type="number" class="form-control" id="harga_jual" name="harga_jual" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="harga_satuan" class="form-label">Harga Satuan</label>
+                            <input type="number" class="form-control" id="harga_satuan" name="harga_satuan" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="qty" class="form-label">Qty</label>
+                            <input type="number" class="form-control" id="qty" name="qty" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="harga_total" class="form-label">Harga Total</label>
+                            <input type="number" class="form-control" id="harga_total" name="harga_total" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="expired_date" class="form-label">Expired Date</label>
+                            <input type="date" class="form-control" id="expired_date" name="expired_date" required>
                         </div>
 
                         <button type="submit" class="btn btn-success" id="submitButton">Simpan</button>
@@ -189,18 +210,7 @@
                 `;
                         },
                     },
-                    // {
-            // targets: -1,
-            // title: "Actions",
-            // searchable: !1,
-            // className: "d-flex align-items-center",
-            // orderable: !1,
-            // render: function (e, t, a, s) {
-            //     return '<div class="d-inline-block"><a href="javascript:;" class="btn btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="bx bx-dots-vertical-rounded icon-base"></i></a><div class="dropdown-menu dropdown-menu-end m-0"><a href="javascript:;" class="dropdown-item">Details</a><a href="javascript:;" class="dropdown-item">Archive</a><div class="dropdown-divider"></div><a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a></div></div><a href="javascript:;" class="item-edit text-body"><i class="bx bxs-edit icon-base"></i></a>';
-            // },
-        // },
                 ],
-                // scrollY: "300px",
                 scrollX: !0,
                 layout: {
                     topStart: {
@@ -243,17 +253,20 @@
 
         // Event untuk Tambah Produk
         document.getElementById('createProductButton').addEventListener('click', function() {
-            document.getElementById('modalTitle').innerText = "Tambah Produk";
-            document.getElementById('productForm').setAttribute('action', "{{ route('produk.store') }}");
+            document.getElementById('modalTitle').innerText = "Tambah Penerimaan Barang";
+            document.getElementById('productForm').setAttribute('action', "{{ route('penerimaan_barang.store') }}");
             document.getElementById('method').value = "POST";
             document.getElementById('submitButton').innerText = "Simpan";
 
-            document.getElementById('kode_barang').value = "";
-            document.getElementById('nama_barang').value = "";
-            document.getElementById('kategori_id').value = "";
-            document.getElementById('satuan').value = "";
-            document.getElementById('gambar').value = "";
-            document.getElementById('gambarPreview').classList.add('d-none');
+            document.getElementById('supplier_id').value = "";
+            document.getElementById('produk_id').value = "";
+            document.getElementById('kode_penerimaan').value = "";
+            document.getElementById('tgl_masuk').value = "";
+            document.getElementById('harga_jual').value = "";
+            document.getElementById('harga_satuan').value = "";
+            document.getElementById('qty').value = "";
+            document.getElementById('harga_total').value = "";
+            document.getElementById('expired_date').value = "";
 
             productModal.show();
         });
@@ -262,27 +275,37 @@
         document.querySelectorAll('.edit-button').forEach(button => {
             button.addEventListener('click', function() {
                 let id = this.getAttribute('data-id');
+                let supplier = this.getAttribute('data-supplier');
+                let produk = this.getAttribute('data-produk');
                 let kode = this.getAttribute('data-kode');
-                let nama = this.getAttribute('data-nama');
-                let kategori = this.getAttribute('data-kategori');
-                let gambar = this.getAttribute('data-gambar');
+                let tgl = this.getAttribute('data-tgl');
+                let jual = this.getAttribute('data-jual');
                 let satuan = this.getAttribute('data-satuan');
+                let qty = this.getAttribute('data-qty');
+                let total = this.getAttribute('data-total');
+                let expired = this.getAttribute('data-expired');
 
-                document.getElementById('modalTitle').innerText = "Edit Produk";
-                document.getElementById('productForm').setAttribute('action', `{{ url('produk') }}/${id}`);
+                document.getElementById('modalTitle').innerText = "Edit Penerimaan Barang";
+                document.getElementById('productForm').setAttribute('action', `{{ url('penerimaan_barang') }}/${id}`);
                 document.getElementById('method').value = "PUT";
                 document.getElementById('submitButton').innerText = "Update";
 
-                document.getElementById('kode_barang').value = kode;
-                document.getElementById('nama_barang').value = nama;
-                document.getElementById('kategori_id').value = kategori;
-                document.getElementById('satuan').value = satuan;
-                document.getElementById('gambarPreview').src = `{{ asset('storage/') }}/${gambar}`;
-                document.getElementById('gambarPreview').classList.remove('d-none');
+                document.getElementById('supplier_id').value = supplier;
+                document.getElementById('produk_id').value = produk;
+                document.getElementById('kode_penerimaan').value = kode;
+                document.getElementById('tgl_masuk').value = tgl;
+                document.getElementById('harga_jual').value = jual;
+                document.getElementById('harga_satuan').value = satuan;
+                document.getElementById('qty').value = qty;
+                document.getElementById('harga_total').value = total;
+                document.getElementById('expired_date').value = expired;
+                classList.remove('d-none');
 
                 productModal.show();
             });
         });
+
+        
 
         // Event untuk Hapus Produk
         document.querySelectorAll('.delete-button').forEach(button => {
@@ -292,7 +315,7 @@
 
                 Swal.fire({
                     title: "Apakah Anda yakin?",
-                    text: `Produk "${nama}" akan dihapus secara permanen!`,
+                    text: `Penerimaan "${produk_id}" akan dihapus secara permanen!`,
                     icon: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#d33",

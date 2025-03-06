@@ -17,7 +17,7 @@ class SupplierController extends Controller
     {
         $validated = $request->validate([
             'nama_supplier' => 'required|string',
-            'telepon' => 'required',
+           'telepon' => 'required|numeric|digits_between:10,12',
             'email' =>'required',
             'alamat' =>'required',
         ]);
@@ -30,7 +30,7 @@ class SupplierController extends Controller
     {
         $request->validate([
             'nama_supplier' => 'required|string',
-            'telepon' => 'required',
+            'telepon' => 'required|numeric|digits_between:10,12',
             'email' =>'required',
             'alamat' =>'required',
         ]);

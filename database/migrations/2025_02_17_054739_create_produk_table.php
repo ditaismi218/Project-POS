@@ -15,16 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('kode_barang', 50)->unique();
             $table->string('nama_barang', 255);
+            $table->string('gambar')->nullable();
 
-            $table->bigInteger('id_kategori')->unsigned();
-
-            // $table->double('harga_beli');
-            // $table->double('harga_jual');
-            // $table->text('deskripsi')->nullable();
-            $table->string('satuan', 50);
+            $table->bigInteger('kategori_id')->unsigned();
+            $table->enum('satuan', ['pcs', 'pack', 'box', 'lusin', 'gram', 'kg', 'ml', 'liter', 'meter', 'botol', 'kaleng', 'sachet', 'strip']);
             $table->timestamps();
 
-            $table->foreign('id_kategori')->references('id')->on('kategori_produk')->onDelete('cascade');
+            $table->foreign('kategori_id')->references('id')->on('kategori_produk')->onDelete('cascade');
         });
     }
 

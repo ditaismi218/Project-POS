@@ -10,20 +10,30 @@ class Penjualan extends Model
     use HasFactory;
 
     protected $table = 'penjualan';
+  protected $guarded = [];
 
-    protected $fillable = [
-        'no_faktur',
-        'tgl_faktur',
-        'total_bayar',
-        'member_id',
-        'user_id',
-        'metode_pembayaran',
-        'status'
-    ];
-
-    public function member()
+    public static function generateNoFaktur()
     {
-        return $this->belongsTo(Member::class);
+        $date = date('Ymd');
+        $lastOrder = self::whereDate('created_at', now()->toDateString())->latest()->first();
+
+        if ($lastOrder) {
+            $lastNumber = (int) substr($lastOrder->no_faktur, -4);
+            $newNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
+        } else {
+            $newNumber = '0001';
+        }
+
+        return 'INV-' . $date . '-' . $newNumber;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($penjualan) {
+            $penjualan->no_faktur = self::generateNoFaktur();
+        });
     }
 
     public function user()
@@ -31,18 +41,18 @@ class Penjualan extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
+
+    public function voucher()
+    {
+        return $this->belongsTo(VoucherDiskon::class);
+    }
+
     public function detailPenjualan()
     {
-        return $this->hasMany(DetailPenjualan::class);
-    }
-
-    public function pembayaran()
-    {
-        return $this->hasOne(Pembayaran::class);
-    }
-
-    public function loyaltyPoints()
-    {
-        return $this->hasMany(LoyaltyPoint::class);
+        return $this->hasMany(DetailPenjualan::class, 'penjualan_id');
     }
 }

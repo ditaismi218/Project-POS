@@ -15,8 +15,7 @@ class Produk extends Model
         'kode_barang',
         'nama_barang',
         'kategori_id',
-        'harga_beli',
-        'harga_jual',
+        'gambar',
         'deskripsi',
         'satuan',
         'gambar',
@@ -29,18 +28,9 @@ class Produk extends Model
         return $this->belongsTo(KategoriProduk::class, 'kategori_id');
     }
 
-    public function stokBarang()
-    {
-        return $this->hasOne(StokBarang::class);
-    }
+    public function penerimaanBarang()
+{
+    return $this->hasMany(PenerimaanBarang::class, 'produk_id');
+}
 
-    public function detailPenerimaan()
-    {
-        return $this->hasMany(DetailPenerimaanBarang::class);
-    }
-
-    public function detailPenjualan()
-    {
-        return $this->hasMany(DetailPenjualan::class);
-    }
 }

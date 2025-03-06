@@ -6,7 +6,7 @@
     <div class="page-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <button class="btn btn-primary" id="createProductButton">
-                <i class="fa fa-plus"></i> Tambah Supplier
+                <i class="fa fa-plus"></i> Tambah User
             </button>
         </div>
 
@@ -15,47 +15,43 @@
         @endif
 
         <div class="card">
-            <h5 class="card-header text-md-start text-center">Tabel Supplier</h5>
+            <h5 class="card-header text-md-start text-center">Tabel User</h5>
             <div class="card-datatable">
             {{-- <div class="card-datatable overflow-auto"> --}}
                 <table class="table table-bordered dt-scrollableTable">
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Nama Supplier</th>
-                            <th>Telepon</th>
+                            <th>Nama User</th>
                             <th>Email</th>
-                            <th>Alamat</th>
+                            <th>Password</th>
+                            <th>Role</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($supplier as $index => $item)
+                        @foreach ($users as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $item->nama_supplier }}</td>
-                                <td>{{ $item->telepon }}</td>
+                                <td>{{ $item->name }}</td>
                                 <td>{{ $item->email }}</td>
-                                <td>{{ $item->alamat }}</td>
+                                <td>{{ $item->password }}</td> 
+                                <td>{{ $item->role }}</td>
                                 <td>
-                                    <button class="btn btn-warning edit-button" 
-                                        data-id="{{ $item->id }}"
-                                        data-nama="{{ $item->nama_supplier }}" 
-                                        data-telepon="{{ $item->telepon }}"
-                                        data-email="{{ $item->email }}" 
-                                        data-alamat="{{ $item->alamat }}"
+                                    <button class="btn btn-warning"
+                                        onclick="test('{{ $item->id }}', '{{ $item->name }}', '{{ $item->email }}', '{{ $item->password }}', '{{ $item->role }}')"
                                         data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="bx bx-edit"></i>
                                     </button>
 
                                     <button class="btn btn-danger delete-button" 
                                         data-id="{{ $item->id }}"
-                                        data-nama="{{ $item->nama_supplier }}">
+                                        data-nama="{{ $item->name }}">
                                         <i class="bx bx-trash"></i>
                                     </button>
 
                                     <form id="delete-form-{{ $item->id }}" 
-                                        action="{{ route('supplier.destroy', $item->id) }}" 
+                                        action="{{ route('users.destroy', $item->id) }}" 
                                         method="POST" style="display:none;">
                                         @csrf
                                         @method('DELETE')
@@ -72,12 +68,12 @@
 
 @endsection
 
-    {{-- modal --}}
+    {{-- modal tambah --}}
     <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Tambah Supplier</h5>
+                    <h5 class="modal-title" id="modalTitle">Tambah User</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -86,16 +82,9 @@
                         <input type="hidden" id="method" name="_method" value="POST">
 
                         <div class="mb-3">
-                            <label for="nama_supplier" class="form-label">Nama Supplier</label>
-                            <input type="text" class="form-control" id="nama_supplier" name="nama_supplier" required>
+                            <label for="name" class="form-label">Nama User</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
                         </div>
-
-                        <div class="mb-3">
-                            <label for="telepon" class="form-label">Telepon</label>
-                            <input type="number" class="form-control" id="telepon" name="telepon" required 
-                                maxlength="12" 
-                                oninput="this.value = this.value.slice(0, 12)">
-                        </div>                        
 
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
@@ -103,8 +92,17 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="alamat" class="form-label">Alamat</label>
-                            <input type="text" class="form-control" id="alamat" name="alamat" required>
+                            <label for="password" class="form-label">password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>                        
+
+                        <div class="mb-3">
+                            <label for="role" class="form-label">role</label>
+                            <select name="role" class="form-control" required>
+                                <option value="admin">Admin</option>
+                                <option value="kasir">Kasir</option>
+                                <option value="gudang">Gudang</option>
+                            </select>
                         </div>
 
                         <button type="submit" class="btn btn-success" id="submitButton">Simpan</button>
@@ -114,14 +112,70 @@
         </div>
     </div>
 
-
-
+     
+<!-- Modal Edit Produk -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="POST">
+                    @csrf
+                    @method('PUT') <!-- Tambahkan ini agar Laravel mengenali metode PUT -->
+                    
+                    <input type="hidden" id="id" name="id">
+                
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama User</label>
+                        <input type="text" class="form-control" id="name-edit" name="name" required>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email-edit" name="email" required>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password (Kosongkan jika tidak diubah)</label>
+                        <input type="password" class="form-control" id="password-edit" name="password">
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select name="role" class="form-control" id="role-edit" required>
+                            <option value="admin">Admin</option>
+                            <option value="kasir">Kasir</option>
+                            <option value="gudang">Gudang</option>
+                        </select>
+                    </div>
+                
+                    <button type="submit" class="btn btn-success">Update</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</div>
 
     @push('script')
         <script>
             $(document).ready(function() {
                 $('.table').DataTable();
             });
+
+            function test(id, name, email, password, role) {
+            document.getElementById('id').value = id;
+            document.getElementById('name-edit').value = name;
+            document.getElementById('email-edit').value = email;
+            document.getElementById('password-edit').value = password;
+            document.getElementById('role-edit').value = role;
+
+            // Atur form agar mengirim ke /users/{id} dengan metode PUT
+    document.getElementById('editForm').action = "/users/" + id;
+        }
         </script>
 
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -209,46 +263,12 @@
 
                 // Event untuk Tambah Supplier
                 document.getElementById('createProductButton').addEventListener('click', function() {
-                    document.getElementById('modalTitle').innerText = "Tambah Supplier";
-                    document.getElementById('productForm').setAttribute('action',
-                        "{{ route('supplier.store') }}");
-                    document.getElementById('method').value = "POST";
-                    document.getElementById('submitButton').innerText = "Simpan";
-
-                    // Reset Form Input
-                    document.getElementById('nama_supplier').value = "";
-                    document.getElementById('telepon').value = "";
-                    document.getElementById('email').value = "";
-                    document.getElementById('alamat').value = "";
-
-                    productModal.show();
+                    let modal = new bootstrap.Modal(document.getElementById('productModal'));
+                    modal.show();
                 });
 
-                // Event untuk Edit Supplier
-                document.querySelectorAll('.edit-button').forEach(button => {
-                    button.addEventListener('click', function() {
-                        let id = this.getAttribute('data-id');
-                        let nama = this.getAttribute('data-nama');
-                        let telepon = this.getAttribute('data-telepon');
-                        let email = this.getAttribute('data-email');
-                        let alamat = this.getAttribute('data-alamat');
 
-                        document.getElementById('modalTitle').innerText = "Edit Supplier";
-                        document.getElementById('productForm').setAttribute('action',
-                            `{{ url('supplier') }}/${id}`);
-                        document.getElementById('method').value = "PUT";
-                        document.getElementById('submitButton').innerText = "Update";
-
-                        document.getElementById('nama_supplier').value = nama;
-                        document.getElementById('telepon').value = telepon;
-                        document.getElementById('email').value = email;
-                        document.getElementById('alamat').value = alamat;
-
-                        productModal.show();
-                    });
-                });
-
-                // Event untuk Hapus Supplier
+                // Event untuk Hapus User
                 document.querySelectorAll('.delete-button').forEach(button => {
                     button.addEventListener('click', function() {
                         let id = this.getAttribute('data-id');
@@ -256,7 +276,7 @@
 
                         Swal.fire({
                             title: "Apakah Anda yakin?",
-                            text: `Supplier "${nama}" akan dihapus secara permanen!`,
+                            text: `User "${nama}" akan dihapus secara permanen!`,
                             icon: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#d33",

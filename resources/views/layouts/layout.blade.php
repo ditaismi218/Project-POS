@@ -168,202 +168,86 @@
 
                 <ul class="menu-inner py-1">
                     <!-- Dashboards -->
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <li class="menu-item {{ Request::routeIs('dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('dashboard') }}" class="menu-link">
                             <i class="menu-icon icon-base bx bx-home-smile"></i>
-                            <div data-i18n="Dashboards">Dashboards</div>
-                            {{-- <div class="badge text-bg-danger rounded-pill ms-auto">5</div> --}}
+                            <div>Dashboard</div>
+                        </a>
+                    </li>   
+                    
+                    {{-- <li class="menu-header small">
+                        <span class="menu-header-text">Manajemen Produk</span>
+                    </li> --}}
+
+                    {{-- Manajemen Produk --}}
+                    <li class="menu-item {{ Request::routeIs('kategori.index') || Request::routeIs('produk.index') || Request::routeIs('supplier.index') ? 'active open' : '' }}">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon bx bx-store-alt"></i>
+                            <div>Manajemen Produk</div>
                         </a>
                         <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="dashboards-analytics.html" class="menu-link">
-                                    <div data-i18n="Analytics">Analytics</div>
+                            <li class="menu-item {{ Request::routeIs('kategori.index') ? 'active' : '' }}">
+                                <a href="{{ route('kategori.index') }}" class="menu-link">
+                                    <div>Kategori Produk</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="dashboards-crm.html" class="menu-link">
-                                    <div data-i18n="CRM">CRM</div>
+                            <li class="menu-item {{ Request::routeIs('produk.index') ? 'active' : '' }}">
+                                <a href="{{ route('produk.index') }}" class="menu-link">
+                                    <div>Produk</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="app-ecommerce-dashboard.html" class="menu-link">
-                                    <div data-i18n="eCommerce">eCommerce</div>
+                            <li class="menu-item {{ Request::routeIs('supplier.index') ? 'active' : '' }}">
+                                <a href="{{ route('supplier.index') }}" class="menu-link">
+                                    <div>Supplier</div>
                                 </a>
                             </li>
-                            <li class="menu-item">
-                                <a href="app-logistics-dashboard.html" class="menu-link">
-                                    <div data-i18n="Logistics">Logistics</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="app-academy-dashboard.html" class="menu-link">
-                                    <div data-i18n="Academy">Academy</div>
+                            <li class="menu-item {{ Request::routeIs('supplpenerimaan_barangier.index') ? 'active' : '' }}">
+                                <a href="{{ route('penerimaan_barang.index') }}" class="menu-link">
+                                    <div>Penerimaan Barang</div>
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <!-- Apps & Pages -->
-                    <li class="menu-header small">
-                        <span class="menu-header-text" data-i18n="Apps & Pages">Apps &amp; Pages</span>
-                    </li>
-                    <li class="menu-item">
-                        <a href="app-email.html" class="menu-link">
-                            <i class="menu-icon icon-base bx bx-envelope"></i>
-                            <div data-i18n="Email">Email</div>
-                        </a>
-                    </li>
-                    <li class="menu-item">
-                        <a href="app-chat.html" class="menu-link">
-                            <i class="menu-icon icon-base bx bx-chat"></i>
-                            <div data-i18n="Chat">Chat</div>
-                        </a>
                     </li>
 
-                    <!-- e-commerce-app menu start -->
-                    <li class="menu-item">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon icon-base bx bx-cart-alt"></i>
-                            <div data-i18n="eCommerce">eCommerce</div>
+                    {{-- <!-- Penerimaan Produk -->
+                    <li class="menu-item {{ Request::routeIs('penerimaan_barang.index') ? 'active' : '' }}">
+                        <a href="{{ route('penerimaan_barang.index') }}" class="menu-link">
+                            <i class="menu-icon bx bx-receipt"></i>
+                            <div>Penerimaan Barang</div>
                         </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item">
-                                <a href="app-ecommerce-dashboard.html" class="menu-link">
-                                    <div data-i18n="Dashboard">Dashboard</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                    <div data-i18n="Products">Products</div>
-                                </a>
-                                <ul class="menu-sub">
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-product-list.html" class="menu-link">
-                                            <div data-i18n="Product List">Product List</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-product-add.html" class="menu-link">
-                                            <div data-i18n="Add Product">Add Product</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-category-list.html" class="menu-link">
-                                            <div data-i18n="Category List">Category List</div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="menu-item">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                    <div data-i18n="Order">Order</div>
-                                </a>
-                                <ul class="menu-sub">
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-order-list.html" class="menu-link">
-                                            <div data-i18n="Order List">Order List</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-order-details.html" class="menu-link">
-                                            <div data-i18n="Order Details">Order Details</div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="menu-item">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                    <div data-i18n="Customer">Customer</div>
-                                </a>
-                                <ul class="menu-sub">
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-customer-all.html" class="menu-link">
-                                            <div data-i18n="All Customers">All Customers</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                            <div data-i18n="Customer Details">Customer Details</div>
-                                        </a>
-                                        <ul class="menu-sub">
-                                            <li class="menu-item">
-                                                <a href="app-ecommerce-customer-details-overview.html"
-                                                    class="menu-link">
-                                                    <div data-i18n="Overview">Overview</div>
-                                                </a>
-                                            </li>
-                                            <li class="menu-item">
-                                                <a href="app-ecommerce-customer-details-security.html"
-                                                    class="menu-link">
-                                                    <div data-i18n="Security">Security</div>
-                                                </a>
-                                            </li>
-                                            <li class="menu-item">
-                                                <a href="app-ecommerce-customer-details-billing.html"
-                                                    class="menu-link">
-                                                    <div data-i18n="Address & Billing">Address & Billing</div>
-                                                </a>
-                                            </li>
-                                            <li class="menu-item">
-                                                <a href="app-ecommerce-customer-details-notifications.html"
-                                                    class="menu-link">
-                                                    <div data-i18n="Notifications">Notifications</div>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="menu-item">
-                                <a href="app-ecommerce-manage-reviews.html" class="menu-link">
-                                    <div data-i18n="Manage Reviews">Manage Reviews</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="app-ecommerce-referral.html" class="menu-link">
-                                    <div data-i18n="Referrals">Referrals</div>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                    <div data-i18n="Settings">Settings</div>
-                                </a>
-                                <ul class="menu-sub">
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-settings-detail.html" class="menu-link">
-                                            <div data-i18n="Store Details">Store Details</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-settings-payments.html" class="menu-link">
-                                            <div data-i18n="Payments">Payments</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-settings-checkout.html" class="menu-link">
-                                            <div data-i18n="Checkout">Checkout</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-settings-shipping.html" class="menu-link">
-                                            <div data-i18n="Shipping & Delivery">Shipping & Delivery</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-settings-locations.html" class="menu-link">
-                                            <div data-i18n="Locations">Locations</div>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="app-ecommerce-settings-notifications.html" class="menu-link">
-                                            <div data-i18n="Notifications">Notifications</div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
+                    </li>     --}}
+                    
+                    <li class="menu-header small">
+                        <span class="menu-header-text">Manajemen Pelanggan</span>
                     </li>
-                    <!-- e-commerce-app menu end -->
-                </ul>
+                    
+                    <!-- Manajemen Member -->
+                    <li class="menu-item {{ Request::routeIs('member.index') ? 'active' : '' }}">
+                        <a href="{{ route('member.index') }}" class="menu-link">
+                            <i class="menu-icon bx bx-id-card"></i>
+                            <div>Member</div>
+                        </a>
+                    </li>     
+                    
+                    <!-- Manajemen Voucher -->
+                    <li class="menu-item {{ Request::routeIs('voucher.index') ? 'active' : '' }}">
+                        <a href="{{ route('voucher.index') }}" class="menu-link">
+                            <i class="menu-icon bx bx-gift"></i>
+                            <div>Voucher</div>
+                        </a>
+                    </li>     
+                    
+                    <li class="menu-header small">
+                        <span class="menu-header-text">Manajemen Pengguna</span>
+                    </li>
+
+                    <!-- Manajemen Pengguna -->
+                    <li class="menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">
+                        <a href="{{ route('users.index') }}" class="menu-link">
+                            <i class="menu-icon bx bx-user-circle"></i>
+                            <div>Pengguna</div>
+                        </a>
+                    </li>     
             </aside>
 
             <div class="menu-mobile-toggler d-xl-none rounded-1">
@@ -459,55 +343,23 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="mb-0">John Doe</h6>
-                                                    <small class="text-body-secondary">Admin</small>
+                                                    <h6 class="mb-0">{{Auth::user()->name}}</h6>
+                                                    <small class="text-body-secondary">{{Auth::user()->role}}</small>
                                                 </div>
                                             </div>
                                         </a>
                                     </li>
+                                    
                                     <li>
-                                        <div class="dropdown-divider my-1"></div>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-profile-user.html"> <i
-                                                class="icon-base bx bx-user icon-md me-3"></i><span>My Profile</span>
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                            @csrf
+                                        </form>
+                                        <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                            <i class="icon-base bx bx-power-off icon-md me-3"></i>
+                                            <span>Log Out</span>
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-account-settings-account.html"> <i
-                                                class="icon-base bx bx-cog icon-md me-3"></i><span>Settings</span> </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-account-settings-billing.html">
-                                            <span class="d-flex align-items-center align-middle">
-                                                <i
-                                                    class="flex-shrink-0 icon-base bx bx-credit-card icon-md me-3"></i><span
-                                                    class="flex-grow-1 align-middle">Billing Plan</span>
-                                                <span class="flex-shrink-0 badge rounded-pill bg-danger">4</span>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider my-1"></div>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-pricing.html"> <i
-                                                class="icon-base bx bx-dollar icon-md me-3"></i><span>Pricing</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="pages-faq.html"> <i
-                                                class="icon-base bx bx-help-circle icon-md me-3"></i><span>FAQ</span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <div class="dropdown-divider my-1"></div>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="auth-login-cover.html" target="_blank"> <i
-                                                class="icon-base bx bx-power-off icon-md me-3"></i><span>Log Out</span>
-                                        </a>
-                                    </li>
+                                    
                                 </ul>
                             </li>
                             <!--/ User -->

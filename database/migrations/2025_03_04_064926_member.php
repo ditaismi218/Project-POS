@@ -13,14 +13,12 @@ return new class extends Migration
     {
         Schema::create('member', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_member', 50)->unique();
-            $table->string('nama', 100);
-            $table->string('no_telp', 20)->nullable();
-            $table->text('alamat')->nullable();
-            $table->string('email', 100)->nullable();
-            $table->integer('loyalty_points')->default(0);
-            $table->date('tgl_bergabung');
-            
+            $table->string('kode_member')->unique();
+            $table->string('nama');
+            $table->string('no_telp', 12);
+            $table->text('alamat');
+            $table->integer('loyalty_points')->nullable();
+            $table->date('tgl_bergabung')->default(now());
             $table->timestamps();
         });
     }

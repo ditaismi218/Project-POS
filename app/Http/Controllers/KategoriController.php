@@ -14,6 +14,13 @@ class KategoriController extends Controller
         return view('kategori.index', compact('kategori'));
     }
 
+    // protected $fillable = [
+    //     'kode_voucher',
+    //     'jenis',
+    //     'nilai',
+    //     'min_belanja',
+    //     'berlaku_hingga'
+    // ];
    
     public function store(Request $request)
     {

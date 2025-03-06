@@ -10,27 +10,31 @@ class PenerimaanBarang extends Model
     use HasFactory;
 
     protected $table = 'penerimaan_barang';
-
     protected $fillable = [
+        'user_id',
+        'supplier_id',
+        'produk_id',
         'kode_penerimaan',
         'tgl_masuk',
-        'supplier_id',
-        'total',
-        'user_id'
+        'harga_jual',
+        'harga_satuan',
+        'qty',
+        'harga_total',
+        'expired_date'
     ];
-
-    public function supplier()
-    {
-        return $this->belongsTo(Supplier::class);
-    }
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function detailPenerimaan()
+    public function supplier()
     {
-        return $this->hasMany(DetailPenerimaanBarang::class);
+        return $this->belongsTo(Supplier::class);
+    }
+
+    public function produk()
+    {
+        return $this->belongsTo(Produk::class);
     }
 }
