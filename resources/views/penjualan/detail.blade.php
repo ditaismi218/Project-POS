@@ -11,7 +11,7 @@
             <p><strong>Tanggal Faktur:</strong> {{ $penjualan->tgl_faktur }}</p>
             <p><strong>Pelanggan:</strong> {{ $penjualan->member->nama ?? 'Umum' }}</p>
             <p><strong>Status:</strong> {{ ucfirst($penjualan->status) }}</p>
-            <p><strong>Total Bayar:</strong> Rp {{ number_format($penjualan->total_bayar, 0, ',', '.') }}</p>
+            <p><strong>Subtotal:</strong> Rp {{ number_format($penjualan->total_bayar, 0, ',', '.') }}</p>
         </div>
     </div>
 
@@ -26,12 +26,21 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($penjualan->detailPenjualan as $index => $detail)
+            @php
+                // Mengelompokkan produk berdasarkan nama
+                $groupedProduk = $penjualan->detailPenjualan->groupBy('produk.nama_barang');
+            @endphp
+
+            @foreach ($groupedProduk as $nama_produk => $details)
+                @php
+                    $total_qty = $details->sum('qty');
+                    $total_subtotal = $details->sum('sub_total');
+                @endphp
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $detail->produk->nama_barang }}</td>
-                    <td>{{ $detail->qty }}</td>
-                    <td>Rp {{ number_format($detail->sub_total, 0, ',', '.') }}</td>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $nama_produk }}</td>
+                    <td>{{ $total_qty }}</td>
+                    <td>Rp {{ number_format($total_subtotal, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
         </tbody>

@@ -10,19 +10,26 @@ class PembayaranController extends Controller
 {
     public function index()
     {
-        $pembayaran = Pembayaran::with('penjualan')->get();
-        // $penjualan = Penjualan::with(['member', 'voucher'])->get();
+        $pembayaran = Pembayaran::with('penjualan')->orderBy('created_at', 'desc')->get();
         return view('pembayaran.index', compact('pembayaran'));
-    }
+    }    
 
     public function create(Penjualan $penjualan)
     {
         if (!$penjualan) {
             return redirect()->route('penjualan.index')->with('error', 'Data penjualan tidak ditemukan.');
         }
-    
+
+        // Load detail penjualan + ambil harga jual terbaru
+        $penjualan->load([
+            'detailPenjualan.produk.penerimaanBarang' => function ($query) {
+                $query->latest('tgl_masuk');
+            }
+        ]);
+
         return view('pembayaran.create', compact('penjualan'));
-    }    
+    }
+
 
     public function store(Request $request)
     {
@@ -64,9 +71,12 @@ class PembayaranController extends Controller
             $penjualan->update(['status' => 'lunas']);
         }
 
-        return redirect()->route('pembayaran.index')->with('success', 'Pembayaran berhasil disimpan.');
+        return back()->with([
+            'success' => 'Pembayaran berhasil!',
+            'detail_url' => route('transaksi.detail', ['id' => $penjualan->id])
+        ]);               
     }
-    
+
 
     /**
      * Menghapus pembayaran.

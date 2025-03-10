@@ -10,7 +10,7 @@ class ProdukController extends Controller
 {
     public function index()
     {
-        $products = Produk::with('kategori')->get();
+        $products = Produk::with('kategori')->orderBy('created_at', 'desc')->get();
         $categories = KategoriProduk::all(); // Untuk modal tambah
         return view('produk.index', compact('products', 'categories'));
     }

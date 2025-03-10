@@ -16,9 +16,7 @@ class Produk extends Model
         'nama_barang',
         'kategori_id',
         'gambar',
-        'deskripsi',
         'satuan',
-        'gambar',
     ];
 
 

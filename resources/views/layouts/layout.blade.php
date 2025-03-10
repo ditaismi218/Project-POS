@@ -82,7 +82,7 @@
 
     <!-- Page CSS -->
 
-
+    @stack('style')
     <!-- Helpers -->
     <script src="{{ asset('asset') }}/assets/vendor/js/helpers.js"></script>
 
@@ -229,14 +229,53 @@
                         </a>
                     </li>     
                     
-                    <!-- Manajemen Voucher -->
-                    <li class="menu-item {{ Request::routeIs('voucher.index') ? 'active' : '' }}">
-                        <a href="{{ route('voucher.index') }}" class="menu-link">
-                            <i class="menu-icon bx bx-gift"></i>
-                            <div>Voucher</div>
+                    <!-- Manajemen Penjualan -->
+                    <li class="menu-item {{ Request::routeIs('penjualan.index') || Request::routeIs('penjualan.create') ? 'active open' : '' }}">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon bx bx-cart-alt"></i>
+                            <div>Penjualan</div>
                         </a>
-                    </li>     
+                        <ul class="menu-sub">
+                            <li class="menu-item {{ Request::routeIs('penjualan.index') ? 'active' : '' }}">
+                                <a href="{{ route('penjualan.index') }}" class="menu-link">
+                                    <div>Penjualan Produk</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Request::routeIs('penjualan.create') ? 'active' : '' }}">
+                                <a href="{{ route('penjualan.create') }}" class="menu-link">
+                                    <div>Tambah Penjualan</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>  
+
+                    <li class="menu-item {{ Request::routeIs('pembayaran.index') ? 'active' : '' }}">
+                        <a href="{{ route('pembayaran.index') }}" class="menu-link">
+                            <i class="menu-icon bx bx-money"></i>
+                            <div>Pembayaran</div>
+                        </a>
+                    </li> 
                     
+                    <!-- Manajemen Laporan -->
+                    <li class="menu-item {{ Request::routeIs('laporan.penjualan') || Request::routeIs('laporan.transaksi') ? 'active open' : '' }}">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
+                            <i class="menu-icon bx bx-file"></i>
+                            <div>Laporan</div>
+                        </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item {{ Request::routeIs('laporan.penjualan') ? 'active' : '' }}">
+                                <a href="{{ route('laporan.penjualan') }}" class="menu-link">
+                                    <div>Penjualan Produk</div>
+                                </a>
+                            </li>
+                            <li class="menu-item {{ Request::routeIs('laporan.transaksi') ? 'active' : '' }}">
+                                <a href="{{ route('laporan.transaksi') }}" class="menu-link">
+                                    <div>Transaksi Produk</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li> 
+
                     <li class="menu-header small">
                         <span class="menu-header-text">Manajemen Pengguna</span>
                     </li>
@@ -461,6 +500,7 @@
 
     <!-- Page JS -->
     <script src="{{ asset('asset') }}/assets/js/tables-datatables-extensions.js"></script>
+    <script src="{{ asset('asset') }}/assets/js/tables-datatables-basic.js"></script>
 
     @stack('script')
 </body>

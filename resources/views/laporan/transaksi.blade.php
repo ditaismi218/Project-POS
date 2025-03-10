@@ -1,51 +1,47 @@
 @extends('layouts.layout')
 
 @section('content')
-    <a href="{{ route('penjualan.create') }}" class="btn btn-primary mb-5">Tambah Penjualan</a>
-
-    @if (session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
-
-    <div class="card">
-        <h5 class="card-header text-md-start text-center">Daftar Penjualan</h5>
-        <div class="card-datatable">
-            <table class="table table-striped dt-scrollableTable">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Faktur</th>
-                        <th>Pelanggan</th>
-                        <th>Subtotal</th>
-                        <th>Status</th>
-                        <th>Tanggal</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($penjualan as $key => $p)
-                        <tr>
-                            <td>{{ $key + 1 }}</td>
-                            <td>{{ $p->no_faktur }}</td>
-                            <td>{{ $p->member->nama ?? 'Umum' }}</td>
-                            <td>Rp {{ number_format($p->total_bayar, 0, ',', '.') }}</td>
-                            <td>{{ ucfirst($p->status) }}</td>
-                            <td>{{ $p->created_at->format('d-m-Y') }}</td>
-                            <td>
-                                <a href="{{ route('penjualan.show', $p->id) }}" class="btn btn-info">Detail</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center">Belum ada transaksi penjualan</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+        <h5 class="mb-0">Laporan Transaksi Barang</h5>
+        <form method="GET" action="{{ route('laporan.transaksi') }}" class="d-flex gap-2">
+            <input type="date" name="tanggal" class="form-control w-auto" value="{{ request('tanggal') }}">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ route('laporan.transaksi') }}" class="btn btn-secondary">Reset</a>
+        </form>
+    </div>     
+    <div class="card-datatable">
+        <table class="dt-scrollableTable table table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>No Faktur</th>
+                    <th>Tanggal</th>
+                    <th>Pelanggan</th>
+                    <th>Kasir</th>
+                    <th>Produk Dibeli</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($transaksi as $index => $item)
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $item->no_faktur }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tgl_faktur)->format('d-m-Y') }}</td>
+                    <td>{{ $item->member->nama ?? 'Umum' }}</td>
+                    <td>{{ $item->user->name }}</td>
+                    <td>
+                        <a href="{{ route('transaksi.detail', $item->id) }}" class="btn btn-primary btn-sm">
+                            Lihat Detail
+                        </a>
+                    </td>                    
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
+</div>
 @endsection
-
 
 @push('script')
     <script>

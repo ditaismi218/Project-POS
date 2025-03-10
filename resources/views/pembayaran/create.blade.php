@@ -1,9 +1,31 @@
 @extends('layouts.layout')
 
 @section('content')
+
+@if(session('success'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            title: 'Pembayaran Berhasil!',
+            text: '{{ session('success') }}',
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: 'Lihat Detail',
+            cancelButtonText: 'Tutup'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ session('detail_url') }}";
+            } else {
+                window.location.href = "{{ route('pembayaran.index') }}"; // Redirect ke pembayaran.index
+            }
+        });
+    </script>
+@endif
+
+
 <div class="card shadow-sm p-4">
     <!-- Header Pembayaran -->
-    <div class="d-flex justify-content-between align-items-center mb-3  rounded">
+    <div class="d-flex justify-content-between align-items-center mb-3 rounded">
         <h4 class="m-0"><i class="fas fa-receipt"></i> Pembayaran - No Faktur: {{ $penjualan->no_faktur }}</h4>
         <span class="badge bg-warning text-dark fw-bold">{{ ucfirst($penjualan->status) }}</span>
     </div>
@@ -25,7 +47,7 @@
     <h6 class="fw-bold">Detail Pembelian</h6>
     <div class="table-responsive mb-3">
         <table class="table table-bordered">
-            <thead class="table-light">
+            <thead>
                 <tr>
                     <th>Nama Produk</th>
                     <th class="text-center">Jumlah</th>
@@ -34,12 +56,27 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($penjualan->detailPenjualan as $detail)
+                @php
+                    $groupedDetails = [];
+                    foreach ($penjualan->detailPenjualan as $detail) {
+                        $produkId = $detail->produk_id;
+                        if (!isset($groupedDetails[$produkId])) {
+                            $groupedDetails[$produkId] = [
+                                'nama' => $detail->produk->nama_barang,
+                                'jumlah' => 0,
+                                'harga_jual' => $detail->produk->penerimaanBarang()->latest('tgl_masuk')->value('harga_jual'),
+                            ];
+                        }
+                        $groupedDetails[$produkId]['jumlah'] += $detail->qty;
+                    }
+                @endphp
+
+                @foreach ($groupedDetails as $detail)
                     <tr>
-                        <td>{{ $detail->produk->nama_barang }}</td>
-                        <td class="text-center">{{ $detail->qty }}</td>
-                        <td class="text-end">Rp {{ number_format($detail->penerimaanBarang->harga_jual, 0, ',', '.') }}</td>
-                        <td class="text-end">Rp {{ number_format($detail->sub_total, 0, ',', '.') }}</td>
+                        <td>{{ $detail['nama'] }}</td>
+                        <td class="text-center">{{ $detail['jumlah'] }}</td>
+                        <td class="text-end">Rp {{ number_format($detail['harga_jual'], 0, ',', '.') }}</td>
+                        <td class="text-end">Rp {{ number_format($detail['jumlah'] * $detail['harga_jual'], 0, ',', '.') }}</td>
                     </tr>
                 @endforeach
             </tbody>

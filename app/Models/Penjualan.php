@@ -10,7 +10,14 @@ class Penjualan extends Model
     use HasFactory;
 
     protected $table = 'penjualan';
-  protected $guarded = [];
+    protected $fillable = [
+        'no_faktur',
+        'tgl_faktur',   
+        'user_id',
+        'member_id',
+        'total_bayar',
+        'status',
+    ];
 
     public static function generateNoFaktur()
     {
@@ -46,13 +53,14 @@ class Penjualan extends Model
         return $this->belongsTo(Member::class);
     }
 
-    public function voucher()
-    {
-        return $this->belongsTo(VoucherDiskon::class);
-    }
-
     public function detailPenjualan()
     {
         return $this->hasMany(DetailPenjualan::class, 'penjualan_id');
     }
+
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class);
+    }
+    
 }

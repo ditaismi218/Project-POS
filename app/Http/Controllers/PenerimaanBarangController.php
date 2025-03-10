@@ -12,11 +12,22 @@ class PenerimaanBarangController extends Controller
 {
     public function index()
     {
-        $penerimaan = PenerimaanBarang::with('user', 'supplier', 'produk')->get();
+        $penerimaan = PenerimaanBarang::selectRaw('
+            produk_id, 
+            supplier_id, 
+            SUM(qty) as total_qty, 
+            SUM(harga_total) as total_harga
+        ')
+        ->groupBy('produk_id', 'supplier_id')
+        ->with(['produk', 'supplier'])
+        ->orderBy('created_at', 'desc') // Urutkan berdasarkan waktu terbaru
+        ->get();
+    
         $suppliers = Supplier::all();
         $products = Produk::all();
+    
         return view('penerimaan_barang.index', compact('penerimaan', 'suppliers', 'products'));
-    }
+    }    
 
     public function store(Request $request)
     {
@@ -89,6 +100,14 @@ class PenerimaanBarangController extends Controller
     
     }
 
+    public function show($id)
+    {
+        $penerimaan = PenerimaanBarang::with('user', 'supplier', 'produk')->where('produk_id', $id)->get();
+        $suppliers = Supplier::all();
+        $products = Produk::all();
+    
+        return view('penerimaan_barang.show', compact('penerimaan', 'suppliers', 'products'));
+    }    
 
     public function destroy($id)
     {
