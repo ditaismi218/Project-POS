@@ -23,7 +23,7 @@
 
                 <!-- Dropdown Export -->
                 <div class="dropdown">
-                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="exportDropdown"
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="exportDropdown"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         Export
                     </button>
@@ -38,11 +38,11 @@
                     <tr>
                         <th>No</th>
                         <th>No Faktur</th>
-                        <th>Tanggal Faktur</th>
+                        <th>Tanggal</th>
                         <th>Subtotal</th>
                         <th>Jumlah Bayar</th>
                         <th>Kembalian</th>
-                        <th>Metode Pembayaran</th>
+                        <th>Metode</th>
                     </tr>
                 </thead>
                 <tbody>

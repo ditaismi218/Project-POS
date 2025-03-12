@@ -180,7 +180,7 @@
                     </li> --}}
 
                     {{-- Manajemen Produk --}}
-                    <li class="menu-item {{ Request::routeIs('kategori.index') || Request::routeIs('produk.index') || Request::routeIs('supplier.index') ? 'active open' : '' }}">
+                    <li class="menu-item {{ Request::routeIs('kategori.index') || Request::routeIs('produk.index') || Request::routeIs('supplier.index') || Request::routeIs('penerimaan_barang.index')  ? 'active open' : '' }}">
                         <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon bx bx-store-alt"></i>
                             <div>Manajemen Produk</div>
@@ -201,7 +201,7 @@
                                     <div>Supplier</div>
                                 </a>
                             </li>
-                            <li class="menu-item {{ Request::routeIs('supplpenerimaan_barangier.index') ? 'active' : '' }}">
+                            <li class="menu-item {{ Request::routeIs('penerimaan_barang.index') ? 'active' : '' }}">
                                 <a href="{{ route('penerimaan_barang.index') }}" class="menu-link">
                                     <div>Penerimaan Barang</div>
                                 </a>

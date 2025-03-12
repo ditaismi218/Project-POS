@@ -1,5 +1,5 @@
 @extends('layouts.layout')
-@section('title', 'Penerimaan Barang')
+@section('title', 'Member')
 
 @section('content')
 
@@ -17,7 +17,8 @@
         <div class="card">
             <h5 class="card-header text-md-start text-center">Tabel Member</h5>
             <div class="card-datatable">
-                <table class="table table-striped dt-scrollableTable">
+            {{-- <div class="card-datatable overflow-auto"> --}}
+                <table class="table table-bordered dt-scrollableTable">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -46,15 +47,16 @@
                                         data-bs-toggle="modal" data-bs-target="#editModal">
                                         <i class="bx bx-edit"></i>
                                     </button>
-
-                                    <button class="btn btn-danger delete-button" data-id="{{ $item->id }}"
+                
+                                    <button class="btn btn-danger delete-button" 
+                                        data-id="{{ $item->id }}"
                                         data-nama="{{ $item->nama }}">
                                         <i class="bx bx-trash"></i>
                                     </button>
-
-                                    <form id="delete-form-{{ $item->id }}"
-                                        action="{{ route('member.destroy', $item->id) }}" method="POST"
-                                        style="display:none;">
+                
+                                    <form id="delete-form-{{ $item->id }}" 
+                                        action="{{ route('member.destroy', $item->id) }}" 
+                                        method="POST" style="display:none;">
                                         @csrf
                                         @method('DELETE')
                                     </form>
@@ -62,10 +64,13 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
+                </table>                
             </div>
         </div>
+
     </div>
+
+@endsection
 
     {{-- modal tambah --}}
     <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
@@ -81,9 +86,9 @@
                         <input type="hidden" id="method" name="_method" value="POST">
 
                         {{-- <div class="mb-3">
-                        <label for="kode_member" class="form-label">Kode Member</label>
-                        <input type="text" class="form-control" id="kode_member" name="kode_member" required>
-                    </div> --}}
+                            <label for="kode_member" class="form-label">Kode Member</label>
+                            <input type="text" class="form-control" id="kode_member" name="kode_member" required>
+                        </div> --}}
 
                         <div class="mb-3">
                             <label for="nama" class="form-label">Nama</label>
@@ -91,26 +96,24 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="no_telp" class="form-label">No Telp</label>
-                            <input type="number" class="form-control" id="no_telp" name="no_telp" maxlength="12"
-                                oninput="this.value = this.value.slice(0, 12)" required>
+                            <label for="no_telp" class="form-label" >No Telp</label>
+                            <input type="number" class="form-control" id="no_telp" name="no_telp" maxlength="12" 
+                            oninput="this.value = this.value.slice(0, 12)" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="alamat" class="form-label">Alamat</label>
                             <textarea class="form-control" id="alamat" name="alamat" rows="2" required></textarea>
-                        </div>
+                        </div>                       
 
                         <div class="mb-3">
                             <label for="loyalty_points" class="form-label">Loyalty Points</label>
-                            <input type="number" class="form-control" id="loyalty_points" name="loyalty_points"
-                                value="0" min="0">
+                            <input type="number" class="form-control" id="loyalty_points" name="loyalty_points" value="0" min="0">
                         </div>
 
                         <div class="mb-3">
                             <label for="tgl_bergabung" class="form-label">Tanggal Bergabung</label>
-                            <input type="date" class="form-control" id="tgl_bergabung" name="tgl_bergabung"
-                                value="0" min="0">
+                            <input type="date" class="form-control" id="tgl_bergabung" name="tgl_bergabung" value="0" min="0">
                         </div>
 
                         <button type="submit" class="btn btn-success" id="submitButton">Simpan</button>
@@ -120,67 +123,62 @@
         </div>
     </div>
 
+     
+<!-- Modal Edit Produk -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Voucher</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" method="POST">
+                    @csrf
+                    @method('PUT') <!-- Tambahkan ini agar Laravel mengenali metode PUT -->
+                    
+                    <input type="hidden" id="id" name="id">
+                
+                    <div class="mb-3">
+                        <label for="kode_member-edit" class="form-label">Kode Member</label>
+                        <input type="text" class="form-control" id="kode_member-edit" name="kode_member" readonly>
+                    </div>                    
 
-    <!-- Modal Edit Produk -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Voucher</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editForm" method="POST">
-                        @csrf
-                        @method('PUT') <!-- Tambahkan ini agar Laravel mengenali metode PUT -->
+                    <div class="mb-3">
+                        <label for="nama" class="form-label">Nama</label>
+                        <input type="text" class="form-control" id="nama-edit" name="nama" required>
+                    </div>
 
-                        <input type="hidden" id="id" name="id">
+                    <div class="mb-3">
+                        <label for="no_telp" class="form-label" >No Telp</label>
+                        <input type="number" class="form-control" id="no_telp-edit" name="no_telp" maxlength="12" 
+                        oninput="this.value = this.value.slice(0, 12)" required>
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="kode_member-edit" class="form-label">Kode Member</label>
-                            <input type="text" class="form-control" id="kode_member-edit" name="kode_member"
-                                readonly>
-                        </div>
+                    <div class="mb-3">
+                        <label for="alamat" class="form-label">Alamat</label>
+                        <textarea class="form-control" id="alamat-edit" name="alamat" rows="2" required></textarea>
+                    </div>                       
 
-                        <div class="mb-3">
-                            <label for="nama" class="form-label">Nama</label>
-                            <input type="text" class="form-control" id="nama-edit" name="nama" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="no_telp" class="form-label">No Telp</label>
-                            <input type="number" class="form-control" id="no_telp-edit" name="no_telp" maxlength="12"
-                                oninput="this.value = this.value.slice(0, 12)" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="alamat" class="form-label">Alamat</label>
-                            <textarea class="form-control" id="alamat-edit" name="alamat" rows="2" required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="loyalty_points" class="form-label">Loyalty Points</label>
-                            <input type="number" class="form-control" id="loyalty_points-edit" name="loyalty_points"
-                                value="0" min="0">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="tgl_bergabung" class="form-label">Tanggal Bergabung</label>
-                            <input type="date" class="form-control" id="tgl_bergabung-edit" name="tgl_bergabung"
-                                value="0" min="0">
-                        </div>
-
-                        <button type="submit" class="btn btn-success">Update</button>
-                    </form>
-
-                </div>
+                    <div class="mb-3">
+                        <label for="loyalty_points" class="form-label">Loyalty Points</label>
+                        <input type="number" class="form-control" id="loyalty_points-edit" name="loyalty_points" value="0" min="0">
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="tgl_bergabung" class="form-label">Tanggal Bergabung</label>
+                        <input type="date" class="form-control" id="tgl_bergabung-edit" name="tgl_bergabung" value="0" min="0">
+                    </div>
+                
+                    <button type="submit" class="btn btn-success">Update</button>
+                </form>
+                
             </div>
         </div>
     </div>
+</div>
 
-@endsection
-
-@push('script')
+    @push('script')
         <script>
             $(document).ready(function() {
                 $('.table').DataTable();

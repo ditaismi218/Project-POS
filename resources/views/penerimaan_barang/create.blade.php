@@ -34,19 +34,19 @@
                     <h5>Detail Produk</h5>
                     <div id="product-container">
                         <div class="row product-row">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-3 mb-2">
                                 <label for="produk_id" class="form-label">Produk</label>
-                                <select class="form-control" name="produk_id[]" required>
-                                    <option value="" disabled selected>Pilih Produk</option>
-                                    @foreach ($products as $product)
-                                        <option value="{{ $product->id }}">{{ $product->nama_barang }}</option>
-                                    @endforeach
-                                </select>
+                                <div class="input-group">
+                                    <input type="text" class="form-control produk_nama" readonly>
+                                    <input type="hidden" name="produk_id[]" class="produk_id">
+                                    <button type="button" class="btn btn-primary pilih-produk-btn" data-bs-toggle="modal"
+                                        data-bs-target="#produkModal">Pilih</button>
+                                </div>
                             </div>
 
                             <div class="col-md-2 mb-3">
                                 <label for="qty" class="form-label">Qty</label>
-                                <input type="number" class="form-control" name="qty[]" required>
+                                <input type="number" class="form-control qty" name="qty[]" min="1" required>
                             </div>
 
                             <div class="col-md-2 mb-3">
@@ -59,7 +59,7 @@
                             </div>
 
                             <div class="col-md-2 mb-3">
-                                <label for="harga_satuan" class="form-label">Harga Satuan</label>
+                                <label for="harga_satuan" class="form-label">Harga Beli Satuan</label>
                                 <div class="input-group">
                                     <span class="input-group-text">Rp</span>
                                     <input type="text" class="form-control harga-satuan" required>
@@ -89,50 +89,117 @@
         </div>
     </div>
 
+    <!-- Modal Pilih Produk -->
+    <div class="modal fade" id="produkModal" tabindex="-1" aria-labelledby="produkModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="produkModalLabel">Pilih Produk</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="searchProduk" placeholder="Cari produk...">
+                    <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nama Produk</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="produkTable">
+                                @foreach ($products as $product)
+                                    <tr>
+                                        <td>{{ $product->nama_barang }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary pilih-produk"
+                                                data-id="{{ $product->id }}"
+                                                data-nama="{{ $product->nama_barang }}">Pilih</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @push('script')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                function formatRupiah(value) {
-                    let number = parseInt(value) || 0;
-                    return new Intl.NumberFormat('id-ID', {
-                        useGrouping: true, // Gunakan pemisah ribuan
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0
-                    }).format(number); // Tidak pakai style: 'currency' agar tanpa Rp
-                }
-
-                function formatInputOnType(input) {
-                    input.addEventListener('input', function(e) {
-                        let rawValue = e.target.value.replace(/[^0-9]/g, ''); // Hanya angka
-                        e.target.value = formatRupiah(rawValue);
-                        e.target.nextElementSibling.value = rawValue; // Simpan nilai asli
+                function validateQty(input) {
+                    input.addEventListener('input', function() {
+                        if (parseInt(this.value) < 1 || isNaN(this.value)) {
+                            this.value = 1;
+                        }
                     });
                 }
 
-                document.querySelectorAll('.harga-jual').forEach(formatInputOnType);
-                document.querySelectorAll('.harga-satuan').forEach(formatInputOnType);
+                function formatRupiah(input) {
+                    input.addEventListener('input', function(e) {
+                        let rawValue = e.target.value.replace(/[^0-9]/g, '');
+                        e.target.value = new Intl.NumberFormat('id-ID').format(rawValue);
+                        e.target.nextElementSibling.value = rawValue;
+                    });
+                }
+                document.querySelectorAll('.harga-jual').forEach(formatRupiah);
+                document.querySelectorAll('.harga-satuan').forEach(formatRupiah);
+                document.querySelectorAll('.qty').forEach(validateQty);
 
                 document.getElementById('addProduct').addEventListener('click', function() {
-                    let productRow = document.querySelector('.product-row').cloneNode(true);
+                    let firstRow = document.querySelector('.product-row');
+                    let requiredFields = firstRow.querySelectorAll('input[required], select[required]');
+                    let isValid = true;
 
-                    productRow.querySelectorAll('input, select').forEach(input => {
-                        if (input.type !== 'hidden') input.value = "";
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('is-invalid'); // Tambah border merah jika kosong
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
                     });
+
+                    if (!isValid) {
+                        alert('Harap isi semua data produk pertama sebelum menambahkan produk baru.');
+                        return;
+                    }
+
+                    let productRow = firstRow.cloneNode(true);
+                    productRow.querySelectorAll('input, select').forEach(input => input.value = "");
+
+                    let qtyInput = productRow.querySelector('.qty');
+                    validateQty(qtyInput);
+
+                    let hargaJual = productRow.querySelector('.harga-jual');
+                    let hargaSatuan = productRow.querySelector('.harga-satuan');
+                    formatRupiah(hargaJual);
+                    formatRupiah(hargaSatuan);
 
                     productRow.querySelector('.remove-product').addEventListener('click', function() {
                         productRow.remove();
                     });
 
-                    productRow.querySelectorAll('.harga-jual').forEach(input => formatInputOnType(input));
-                    productRow.querySelectorAll('.harga-satuan').forEach(input => formatInputOnType(input));
-
                     document.getElementById('product-container').appendChild(productRow);
                 });
 
-                document.querySelectorAll('.remove-product').forEach(button => {
-                    button.addEventListener('click', function() {
-                        button.closest('.product-row').remove();
+                document.querySelectorAll('input, select').forEach(field => {
+                    field.addEventListener('input', function() {
+                        if (this.value.trim()) {
+                            this.classList.remove('is-invalid');
+                        }
                     });
+                });
+
+                document.getElementById('produkTable').addEventListener('click', function(e) {
+                    if (e.target.classList.contains('pilih-produk')) {
+                        let activeRow = document.querySelector('.product-row:last-child');
+                        activeRow.querySelector('.produk_nama').value = e.target.getAttribute('data-nama');
+                        activeRow.querySelector('.produk_id').value = e.target.getAttribute('data-id');
+                        bootstrap.Modal.getInstance(document.getElementById('produkModal')).hide();
+                    }
                 });
             });
         </script>
