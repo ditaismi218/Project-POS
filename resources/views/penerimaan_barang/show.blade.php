@@ -41,14 +41,14 @@
                                 <td>{{ $item->kode_penerimaan }}</td>
                                 <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
                                 <td class="text-success">
-                                    Rp {{ number_format($item->harga_jual, 2, ',', '.') }}
+                                    Rp {{ number_format($item->harga_jual, 0, ',', '.') }}
                                 </td>
                                 <td class="text-primary">
-                                    Rp {{ number_format($item->harga_satuan, 2, ',', '.') }}
+                                    Rp {{ number_format($item->harga_satuan, 0, ',', '.') }}
                                 </td>
                                 <td class="text-center fw-bold">{{ $item->qty }}</td>
                                 <td class="text-danger">
-                                    Rp {{ number_format($item->harga_total, 2, ',', '.') }}
+                                    Rp {{ number_format($item->harga_total, 0, ',', '.') }}
                                 </td>
                                 <td>
                                     {{ $item->expired_date ? \Carbon\Carbon::parse($item->expired_date)->format('d-m-Y') : '-' }}

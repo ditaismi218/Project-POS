@@ -10,13 +10,35 @@
     @endif
 
     <div class="card">
-        <h5 class="card-header text-md-start text-center">History Pembayaran</h5>
-        <div class="card-datatable">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <h5 class="m-0">Pembayaran</h5>
+
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <form method="GET" action="{{ route('pembayaran.index') }}" class="d-flex gap-2">
+                    <input type="date" name="tanggal_mulai" class="form-control w-auto" value="{{ request('tanggal_mulai') }}">
+                    <input type="date" name="tanggal_selesai" class="form-control w-auto" value="{{ request('tanggal_selesai') }}">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="{{ route('laporan.transaksi') }}" class="btn btn-secondary">Reset</a>
+                </form> 
+
+                <!-- Dropdown Export -->
+                <div class="dropdown">
+                    <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="exportDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        Export
+                    </button>
+                    <ul class="dropdown-menu" id="export-menu" aria-labelledby="exportDropdown"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-datatable pb-0 px-3">
             <table class="dt-scrollableTable table table-bordered">
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Penjualan</th>
+                        <th>No Faktur</th>
+                        <th>Tanggal Faktur</th>
                         <th>Subtotal</th>
                         <th>Jumlah Bayar</th>
                         <th>Kembalian</th>
@@ -28,6 +50,7 @@
                         <tr>
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->penjualan->no_faktur }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->penjualan->tgl_faktur)->format('d-m-Y') }}</td>
                             <td>Rp {{ number_format($item->penjualan->total_bayar, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($item->jumlah_bayar, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($item->kembalian, 0, ',', '.') }}</td>
@@ -41,89 +64,74 @@
 @endsection
 
 @push('script')
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script>
+
     <script>
         $(document).ready(function() {
-            $('.table').DataTable();
-        });
+            let table = $('.dt-scrollableTable').DataTable({
+                dom: '<"d-flex justify-content-between align-items-center px-3 py-2"' +
+                    '<"col-auto"l>' + // "Tampilkan _MENU_ data per halaman"
+                    '<"col-auto"f>' + // "Cari:"
+                    '>' +
+                    'Brt<' +
+                    '"d-flex justify-content-between align-items-center px-3 py-2"' +
+                    '<"dataTables_info"i>' + // Teks info jumlah data
+                    '<"dataTables_paginate"p>' + // Pagination
+                    '>',
+                buttons: [{
+                        extend: 'copy',
+                        text: 'Copy',
+                        className: 'dropdown-item'
+                    },
+                    {
+                        extend: 'csv',
+                        text: 'CSV',
+                        className: 'dropdown-item'
+                    },
+                    {
+                        extend: 'excel',
+                        text: 'Excel',
+                        className: 'dropdown-item'
+                    },
+                    {
+                        extend: 'pdf',
+                        text: 'PDF',
+                        className: 'dropdown-item'
+                    },
+                    {
+                        extend: 'print',
+                        text: 'Print',
+                        className: 'dropdown-item'
+                    }
+                ],
+                scrollX: true,
+                language: {
+                    paginate: {
+                        next: '<i class="bx bx-chevron-right icon-sm"></i>',
+                        previous: '<i class="bx bx-chevron-left icon-sm"></i>',
+                    },
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    search: "Cari:",
+                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                    infoFiltered: "(disaring dari _MAX_ total data)",
+                    zeroRecords: "Tidak ada data yang sesuai",
+                    emptyTable: "Tidak ada data tersedia",
+                },
 
-        document.addEventListener("DOMContentLoaded", function(e) {
-            let a = document.querySelector(".dt-scrollableTable");
-            a &&
-                new DataTable(a, {
-                    columnDefs: [{
-                        targets: -2,
-                        render: function(e, t, a, s) {
-                            var a = a.status,
-                                r = {
-                                    1: {
-                                        title: "Current",
-                                        class: "bg-label-primary",
-                                    },
-                                    2: {
-                                        title: "Professional",
-                                        class: "bg-label-success",
-                                    },
-                                    3: {
-                                        title: "Rejected",
-                                        class: "bg-label-danger",
-                                    },
-                                    4: {
-                                        title: "Resigned",
-                                        class: "bg-label-warning",
-                                    },
-                                    5: {
-                                        title: "Applied",
-                                        class: "bg-label-info"
-                                    },
-                                };
-                            return void 0 === r[a] ?
-                                e :
-                                `
-                <span class="badge ${r[a].class}">
-                    ${r[a].title}
-                </span>
-                `;
-                        },
-                    }, ],
-                    scrollX: !0,
-                    layout: {
-                        topStart: {
-                            rowClass: "row mx-3 my-0 justify-content-between",
-                            features: [{
-                                pageLength: {
-                                    menu: [7, 10, 25, 50, 100],
-                                    text: "Show_MENU_entries",
-                                },
-                            }, ],
-                        },
-                        topEnd: {
-                            search: {
-                                placeholder: ""
-                            }
-                        },
-                        bottomStart: {
-                            rowClass: "row mx-3 justify-content-between",
-                            features: ["info"],
-                        },
-                        bottomEnd: {
-                            paging: {
-                                firstLast: !1
-                            }
-                        },
-                    },
-                    language: {
-                        paginate: {
-                            next: '<i class="icon-base bx bx-chevron-right scaleX-n1-rtl icon-sm"></i>',
-                            previous: '<i class="icon-base bx bx-chevron-left scaleX-n1-rtl icon-sm"></i>',
-                        },
-                    },
-                    initComplete: function(e, t) {
-                        a.querySelector("tbody tr:first-child").classList.add(
-                            "border-top-0"
-                        );
-                    },
-                });
+                lengthMenu: [7, 10, 25, 50, 100],
+                pageLength: 10
+            });
 
+            // Tempatkan tombol export ke dalam div #export-buttons
+            table.buttons().container().find('button').each(function() {
+                $('#export-menu').append($(this).wrap('<li>').parent());
+            });
         });
     </script>
 @endpush

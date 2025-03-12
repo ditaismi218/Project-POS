@@ -55,6 +55,7 @@ Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update
 Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 
 Route::get('/penerimaan_barang', [PenerimaanBarangController::class, 'index'])->name('penerimaan_barang.index'); 
+Route::get('/penerimaan_barang/create', [PenerimaanBarangController::class, 'create'])->name('penerimaan_barang.create'); 
 Route::post('/penerimaan_barang', [PenerimaanBarangController::class, 'store'])->name('penerimaan_barang.store');
 Route::get('/penerimaan_barang/{id}', [PenerimaanBarangController::class, 'show'])->name('penerimaan_barang.show');
 Route::post('/penerimaan_barang/edit', [PenerimaanBarangController::class, 'update'])->name('penerimaan_barang.update');

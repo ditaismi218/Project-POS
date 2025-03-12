@@ -136,7 +136,7 @@ class PenjualanController extends Controller
             ->when($search, function ($query) use ($search) {
                 return $query->where('nama_barang', 'like', "%$search%");
             })
-            ->paginate(8)
+            ->paginate(4)
             ->appends(['search' => $search]); // Menjaga query search di pagination
     
         return view('penjualan.create', compact('members', 'produk', 'search'));

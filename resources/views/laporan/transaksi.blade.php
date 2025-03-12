@@ -5,10 +5,12 @@
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
         <h5 class="mb-0">Laporan Transaksi Barang</h5>
         <form method="GET" action="{{ route('laporan.transaksi') }}" class="d-flex gap-2">
-            <input type="date" name="tanggal" class="form-control w-auto" value="{{ request('tanggal') }}">
+            <input type="date" name="tanggal_mulai" class="form-control w-auto" value="{{ request('tanggal_mulai') }}">
+            {{-- <span class="align-self-center"></span> --}}
+            <input type="date" name="tanggal_selesai" class="form-control w-auto" value="{{ request('tanggal_selesai') }}">
             <button type="submit" class="btn btn-primary">Filter</button>
             <a href="{{ route('laporan.transaksi') }}" class="btn btn-secondary">Reset</a>
-        </form>
+        </form>        
     </div>     
     <div class="card-datatable">
         <table class="dt-scrollableTable table table-bordered">

@@ -5,14 +5,27 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pembayaran;
 use App\Models\Penjualan;
+use Illuminate\Support\Carbon;
 
 class PembayaranController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pembayaran = Pembayaran::with('penjualan')->orderBy('created_at', 'desc')->get();
+        $query = Pembayaran::with('penjualan')->orderBy('created_at', 'desc');
+
+        if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
+            $tanggalMulai = Carbon::parse($request->tanggal_mulai)->startOfDay();
+            $tanggalSelesai = Carbon::parse($request->tanggal_selesai)->endOfDay(); 
+
+            $query->whereHas('penjualan', function ($q) use ($tanggalMulai, $tanggalSelesai) {
+                $q->whereBetween('tgl_faktur', [$tanggalMulai, $tanggalSelesai]);
+            });
+        }
+
+        $pembayaran = $query->get();
+
         return view('pembayaran.index', compact('pembayaran'));
-    }    
+    }
 
     public function create(Penjualan $penjualan)
     {
@@ -74,7 +87,7 @@ class PembayaranController extends Controller
         return back()->with([
             'success' => 'Pembayaran berhasil!',
             'detail_url' => route('transaksi.detail', ['id' => $penjualan->id])
-        ]);               
+        ]);
     }
 
 
