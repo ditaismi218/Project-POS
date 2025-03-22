@@ -3,7 +3,7 @@
 @section('content')
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-        <h5 class="mb-0">Laporan Transaksi Barang</h5>
+        <h5 class="mb-0">Laporan Transaksi Penjualan Barang</h5>
         <form method="GET" action="{{ route('laporan.transaksi') }}" class="d-flex gap-2">
             <input type="date" name="tanggal_mulai" class="form-control w-auto" value="{{ request('tanggal_mulai') }}">
             {{-- <span class="align-self-center"></span> --}}

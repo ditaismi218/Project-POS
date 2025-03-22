@@ -19,7 +19,8 @@ return new class extends Migration
 
             $table->bigInteger('kategori_id')->unsigned();
             $table->enum('satuan', ['pcs', 'pack', 'box', 'lusin', 'gram', 'kg', 'ml', 'liter', 'meter', 'botol', 'kaleng', 'sachet', 'strip']);
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
             $table->foreign('kategori_id')->references('id')->on('kategori_produk')->onDelete('cascade');
         });

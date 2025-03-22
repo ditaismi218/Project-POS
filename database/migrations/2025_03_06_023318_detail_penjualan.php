@@ -13,7 +13,8 @@ return new class extends Migration {
             $table->foreignId('penerimaan_barang_id')->constrained('penerimaan_barang')->onDelete('cascade');
             $table->integer('qty');
             $table->double('sub_total');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         });
     }
 

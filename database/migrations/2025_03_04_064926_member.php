@@ -19,7 +19,8 @@ return new class extends Migration
             $table->text('alamat');
             $table->integer('loyalty_points')->nullable();
             $table->date('tgl_bergabung')->default(now());
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         });
     }
 

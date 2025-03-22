@@ -8,7 +8,7 @@
     @endif
 
     <div class="card">
-        <h5 class="card-header text-md-start text-center">Daftar Penjualan</h5>
+        <h5 class="card-header text-md-start text-center">Tabel Logs</h5>
         <div class="card-datatable">
             <table class="table table-striped dt-scrollableTable">
                 <thead>

@@ -13,9 +13,10 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('member_id')->nullable()->constrained('member')->onDelete('set null');
             $table->double('total_bayar');
-            $table->enum('status', ['lunas', 'belum_lunas', 'batal'])->default('belum_lunas');
+            $table->enum('status', ['lunas', 'belum_lunas', 'batal, pending'])->default('belum_lunas');
             $table->foreignId('voucher_id')->nullable()->constrained('voucher')->onDelete('set null');
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         });
     }
 

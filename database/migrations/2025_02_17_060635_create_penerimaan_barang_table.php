@@ -22,7 +22,8 @@ return new class extends Migration
             $table->integer('qty');
             $table->decimal('harga_total', 15, 2);
             $table->date('expired_date')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
         });
     }
 

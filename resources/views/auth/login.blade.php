@@ -303,7 +303,7 @@
     </div>
 
     <!-- / Content -->
-
+{{-- 
     <script src="{{ asset('asset') }}/assets/vendor/libs/jquery/jquery.js"></script>
 
     <script src="{{ asset('asset') }}/assets/vendor/libs/popper/popper.js"></script>
@@ -320,7 +320,7 @@
 
     <script src="{{ asset('asset') }}/assets/vendor/js/menu.js"></script>
 
-    <!-- endbuild -->
+    <!-- endbuild --> --}}
 
     <!-- Vendors JS -->
     <script src="{{ asset('asset') }}/assets/vendor/libs/@form-validation/popular.js"></script>

@@ -56,14 +56,14 @@
                                         <i class="bx bx-edit"></i>
                                     </button>
 
-                                    <button class="btn btn-danger delete-button" data-id="{{ $item->id }}" data-nama="{{ $item->nama_barang }}">
+                                    {{-- <button class="btn btn-danger delete-button" data-id="{{ $item->id }}" data-nama="{{ $item->nama_barang }}">
                                         <i class="bx bx-trash"></i>
-                                    </button>
+                                    </button> --}}
 
-                                    <form id="delete-form-{{ $item->id }}" action="{{ route('produk.destroy', $item->id) }}" method="POST" style="display:none;">
+                                    {{-- <form id="delete-form-{{ $item->id }}" action="{{ route('produk.destroy', $item->id) }}" method="POST" style="display:none;">
                                         @csrf
                                         @method('DELETE')
-                                    </form>
+                                    </form> --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -285,27 +285,27 @@
         });
 
         // Event untuk Hapus Produk
-        document.querySelectorAll('.delete-button').forEach(button => {
-            button.addEventListener('click', function() {
-                let id = this.getAttribute('data-id');
-                let nama = this.getAttribute('data-nama');
+        // document.querySelectorAll('.delete-button').forEach(button => {
+        //     button.addEventListener('click', function() {
+        //         let id = this.getAttribute('data-id');
+        //         let nama = this.getAttribute('data-nama');
 
-                Swal.fire({
-                    title: "Apakah Anda yakin?",
-                    text: `Produk "${nama}" akan dihapus secara permanen!`,
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Ya, hapus!",
-                    cancelButtonText: "Batal"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(`delete-form-${id}`).submit();
-                    }
-                });
-            });
-        });
+        //         Swal.fire({
+        //             title: "Apakah Anda yakin?",
+        //             text: `Produk "${nama}" akan dihapus secara permanen!`,
+        //             icon: "warning",
+        //             showCancelButton: true,
+        //             confirmButtonColor: "#d33",
+        //             cancelButtonColor: "#3085d6",
+        //             confirmButtonText: "Ya, hapus!",
+        //             cancelButtonText: "Batal"
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 document.getElementById(`delete-form-${id}`).submit();
+        //             }
+        //         });
+        //     });
+        // });
     });
 </script>
 @endpush

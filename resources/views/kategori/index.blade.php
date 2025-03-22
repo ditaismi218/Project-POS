@@ -5,13 +5,6 @@
 <div class="page-body">
     <div class="mb-4 d-flex justify-content-between align-items-center">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                class="icon icon-tabler icons-tabler-outline icon-tabler-plus">
-                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                <path d="M12 5l0 14" />
-                <path d="M5 12l14 0" />
-            </svg>
             Tambah Kategori Produk
         </button>
     </div>
@@ -21,21 +14,21 @@
     @endif
 
     <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Daftar Kategori Produk</h6>
-        </div>
+       
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                     <thead>
                         <tr>
-                            <th>NAMA KATEGORIPRODUK</th>
-                            <th>AKSI</th>
+                            <th>No</th>
+                            <th>Nama Kategori</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($kategori as $item)
+                        @foreach($kategori as $index => $item)
                         <tr>
+                            <td>{{ $index + 1 }}</td>
                             <td>{{ $item->nama_kategori }}</td>
                             <td>
                                 <button class="btn btn-warning edit-button"

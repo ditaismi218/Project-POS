@@ -18,13 +18,16 @@ class SupplierSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
         Supplier::truncate();
         Schema::enableForeignKeyConstraints();
-        $file = File::get('database/data/supplier.json');
+        $file = File::get('database/data/Supplier.json');
         $data = json_decode($file);
         foreach ($data as $item) {
             Supplier::create([
-                'id' => $item->id,
+                // 'id' => $item->id,
+                'nama_supplier' => $item->nama_supplier,
+                'telpon' => $item->telpon,
+                'email' => $item->email,
+                'alamat' => $item->alamat,
             ]);
         }
-        
     }
 }

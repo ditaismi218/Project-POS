@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('penjualan_id')->constrained('penjualan')->onDelete('cascade');
             $table->decimal('jumlah_bayar', 15, 2);
             $table->enum('metode_pembayaran', ['cash', 'debit', 'kredit', 'ewallet']);
-            $table->timestamps();
+            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP'));
 
         });
     }

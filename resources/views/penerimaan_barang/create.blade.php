@@ -14,14 +14,15 @@
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="supplier_id" class="form-label">Supplier</label>
-                            <select class="form-control" id="supplier_id" name="supplier_id" required>
-                                <option value="" disabled selected>Pilih Supplier</option>
-                                @foreach ($suppliers as $supplier)
-                                    <option value="{{ $supplier->id }}">{{ $supplier->nama_supplier }}</option>
-                                @endforeach
-                            </select>
+                            <label for="supplier_nama" class="form-label">Supplier</label>
+                            <div class="input-group">
+                                <!-- Tambahkan data-bs-toggle dan data-bs-target untuk membuka modal -->
+                                <input type="text" class="form-control" id="supplier_nama" readonly
+                                    data-bs-toggle="modal" data-bs-target="#supplierModal" style="cursor: pointer;">
+                                <input type="hidden" name="supplier_id" id="supplier_id">
+                            </div>
                         </div>
+
 
                         <div class="col-md-6 mb-3">
                             <label for="tgl_masuk" class="form-label">Tanggal Masuk</label>
@@ -37,10 +38,9 @@
                             <div class="col-md-3 mb-2">
                                 <label for="produk_id" class="form-label">Produk</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control produk_nama" readonly>
+                                    <input type="text" class="form-control produk_nama" readonly id="produk_nama"
+                                        data-bs-toggle="modal" data-bs-target="#produkModal" style="cursor: pointer;">
                                     <input type="hidden" name="produk_id[]" class="produk_id">
-                                    <button type="button" class="btn btn-primary pilih-produk-btn" data-bs-toggle="modal"
-                                        data-bs-target="#produkModal">Pilih</button>
                                 </div>
                             </div>
 
@@ -89,6 +89,43 @@
         </div>
     </div>
 
+    <!-- Modal Pilih Supplier -->
+    <div class="modal fade" id="supplierModal" tabindex="-1" aria-labelledby="supplierModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="supplierModalLabel">Pilih Supplier</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-3" id="searchSupplier" placeholder="Cari supplier...">
+                    <div class="table-responsive" style="max-height: 60vh; overflow-y: auto;">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Nama Supplier</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplierTable">
+                                @foreach ($suppliers as $supplier)
+                                    <tr>
+                                        <td>{{ $supplier->nama_supplier }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary pilih-supplier"
+                                                data-id="{{ $supplier->id }}"
+                                                data-nama="{{ $supplier->nama_supplier }}">Pilih</button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Pilih Produk -->
     <div class="modal fade" id="produkModal" tabindex="-1" aria-labelledby="produkModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
@@ -125,6 +162,7 @@
             </div>
         </div>
     </div>
+
 
     @push('script')
         <script>
@@ -199,6 +237,112 @@
                         activeRow.querySelector('.produk_nama').value = e.target.getAttribute('data-nama');
                         activeRow.querySelector('.produk_id').value = e.target.getAttribute('data-id');
                         bootstrap.Modal.getInstance(document.getElementById('produkModal')).hide();
+                    }
+                });
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Tambahkan event listener untuk input produk
+                    document.querySelectorAll('.produk_nama').forEach(function(inputProduk) {
+                        inputProduk.addEventListener('click', function() {
+                            // Menampilkan modal produk
+                            new bootstrap.Modal(document.getElementById('produkModal')).show();
+                        });
+                    });
+
+                    // Fungsi untuk memilih produk dari tabel
+                    document.getElementById('produkTable').addEventListener('click', function(e) {
+                        if (e.target.classList.contains('pilih-produk')) {
+                            let activeRow = document.querySelector('.product-row:last-child');
+                            activeRow.querySelector('.produk_nama').value = e.target.getAttribute(
+                                'data-nama');
+                            activeRow.querySelector('.produk_id').value = e.target.getAttribute(
+                                'data-id');
+                            bootstrap.Modal.getInstance(document.getElementById('produkModal')).hide();
+                        }
+                    });
+                });
+
+            });
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let produkTable = document.getElementById('produkTable');
+
+                document.getElementById('searchProduk').addEventListener('input', function() {
+                    let searchValue = this.value.toLowerCase();
+                    let rows = produkTable.querySelectorAll('tr');
+                    let hasResults = false;
+
+                    // Hapus dulu pesan "Tidak ada produk tersedia" jika ada
+                    let noDataRow = document.getElementById('noDataRow');
+                    if (noDataRow) noDataRow.remove();
+
+                    rows.forEach(row => {
+                        let productName = row.querySelector('td:first-child')?.textContent
+                            .toLowerCase();
+                        if (productName && productName.includes(searchValue)) {
+                            row.style.display = '';
+                            hasResults = true;
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Jika setelah pencarian tidak ada hasil, tambahkan kembali pesan "Tidak ada produk tersedia"
+                    if (!hasResults) {
+                        let newRow = document.createElement('tr');
+                        newRow.id = 'noDataRow';
+                        newRow.innerHTML =
+                            `<td colspan="2" class="text-center text-muted">Tidak ada produk tersedia</td>`;
+                        produkTable.appendChild(newRow);
+                    }
+                });
+            });
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Event listener untuk memilih supplier saat klik tombol "Pilih"
+                document.getElementById('supplierTable').addEventListener('click', function(e) {
+                    if (e.target && e.target.classList.contains('pilih-supplier')) {
+                        let supplierName = e.target.getAttribute('data-nama'); // Ambil nama supplier
+                        let supplierId = e.target.getAttribute('data-id'); // Ambil ID supplier
+
+                        // Isi input supplier di form utama
+                        document.getElementById('supplier_nama').value = supplierName;
+                        document.getElementById('supplier_id').value = supplierId;
+
+                        // Menutup modal setelah memilih supplier
+                        bootstrap.Modal.getInstance(document.getElementById('supplierModal')).hide();
+                    }
+                });
+
+                // Filter pencarian supplier
+                document.getElementById('searchSupplier').addEventListener('input', function() {
+                    let searchValue = this.value.toLowerCase();
+                    let rows = document.querySelectorAll('#supplierTable tr');
+                    let hasResults = false;
+
+                    rows.forEach(row => {
+                        let supplierName = row.querySelector('td').textContent.toLowerCase();
+                        if (supplierName && supplierName.includes(searchValue)) {
+                            row.style.display = '';
+                            hasResults = true;
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+
+                    // Tampilkan pesan jika tidak ada supplier yang ditemukan
+                    let noDataRow = document.getElementById('noSupplierRow');
+                    if (noDataRow) noDataRow.remove();
+
+                    if (!hasResults) {
+                        let newRow = document.createElement('tr');
+                        newRow.id = 'noSupplierRow';
+                        newRow.innerHTML =
+                            `<td colspan="2" class="text-center text-muted">Tidak ada supplier tersedia</td>`;
+                        document.getElementById('supplierTable').appendChild(newRow);
                     }
                 });
             });

@@ -5,7 +5,7 @@
     <div class="card">
 
         <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-            <h5 class="m-0">Laporan Penjualan Barang</h5>
+            <h5 class="m-0">Laporan Total Penjualan Barang</h5>
     
             <div class="d-flex align-items-center gap-3 ms-auto">
                 <!-- Dropdown Export -->

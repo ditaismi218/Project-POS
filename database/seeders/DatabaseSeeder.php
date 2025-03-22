@@ -21,13 +21,16 @@ class DatabaseSeeder extends Seeder
         // $this->call(KategoriProdukSeeder::class);
 
         // Produk::factory()->count(22)->create();
-        Supplier::factory()->count(10)->create();
+        // Supplier::factory()->count(10)->create();
         
-        // User::factory()->create([
-        //     'name' => 'admin',
-        //     'email' => 'admin@example.com',
-        //     'password' => Hash::make('admin123'),
-        //     'role' => 'admin',
-        // ]);
+    //  $this -> call([
+    //     UserSeeders::class,
+    //  ]);
+    $this -> call([
+            // UserSeeders::class,
+            // SupplierSeeder::class,
+            // KategoriProdukSeeder::class,
+            // ProdukSeeder::class,
+         ]);
     }
 }

@@ -9,40 +9,6 @@
 
     <title>PROJECT POS MINIMARKET</title>
 
-    <!-- Canonical SEO -->
-    <meta name="description"
-        content="Sneat is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
-
-    <meta name="keywords"
-        content="Sneat bootstrap dashboard, sneat bootstrap 5 dashboard, themeselection, html dashboard, web dashboard, frontend dashboard, responsive bootstrap theme" />
-    <meta property="og:title" content="Sneat Bootstrap 5 Dashboard PRO by ThemeSelection" />
-    <meta property="og:type" content="product" />
-    <meta property="og:url" content="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/" />
-    <meta property="og:image"
-        content="https://themeselection.com/wp-content/uploads/edd/2024/08/sneat-dashboard-pro-bootstrap-smm-image.png" />
-    <meta property="og:description"
-        content="Sneat is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
-    <meta property="og:site_name" content="ThemeSelection" />
-    <link rel="canonical" href="https://themeselection.com/item/sneat-dashboard-pro-bootstrap/" />
-
-    <!-- ? PROD Only: Google Tag Manager (Default ThemeSelection: GTM-5DDHKGP, PixInvent: GTM-5J3LMKC) -->
-    <script>
-        (function(w, d, s, l, i) {
-            w[l] = w[l] || [];
-            w[l].push({
-                'gtm.start': new Date().getTime(),
-                event: 'gtm.js'
-            });
-            var f = d.getElementsByTagName(s)[0],
-                j = d.createElement(s),
-                dl = l != 'dataLayer' ? '&l=' + l : '';
-            j.async = true;
-            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-            f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-5DDHKGP');
-    </script>
-    <!-- End Google Tag Manager -->
-
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('asset') }}/assets/img/favicon/favicon.ico" />
 
@@ -56,14 +22,10 @@
     <link rel="stylesheet" href="{{ asset('asset') }}/assets/vendor/fonts/iconify-icons.css" />
 
     <!-- Core CSS -->
-    <!-- build:css assets/vendor/css/theme.css  -->
-
 
     <link rel="stylesheet" href="{{ asset('asset') }}/assets/vendor/libs/pickr/pickr-themes.css" />
-
     <link rel="stylesheet" href="{{ asset('asset') }}/assets/vendor/css/core.css" />
     <link rel="stylesheet" href="{{ asset('asset') }}/assets/css/demo.css" />
-
 
     <!-- Vendors CSS -->
 
@@ -168,46 +130,76 @@
 
                 <ul class="menu-inner py-1">
                     <!-- Dashboards -->
-                    <li class="menu-item {{ Request::routeIs('dashboard') ? 'active' : '' }}">
-                        <a href="{{ route('dashboard') }}" class="menu-link">
+                    <li
+                        class="menu-item {{ Request::routeIs('admin.dashboard', 'kasir.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route('admin.dashboard') }}" class="menu-link">
                             <i class="menu-icon icon-base bx bx-home-smile"></i>
                             <div>Dashboard</div>
                         </a>
-                    </li>   
-                    
+                    </li>
+
                     {{-- <li class="menu-header small">
                         <span class="menu-header-text">Manajemen Produk</span>
                     </li> --}}
 
-                    {{-- Manajemen Produk --}}
-                    <li class="menu-item {{ Request::routeIs('kategori.index') || Request::routeIs('produk.index') || Request::routeIs('supplier.index') || Request::routeIs('penerimaan_barang.index')  ? 'active open' : '' }}">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon bx bx-store-alt"></i>
-                            <div>Manajemen Produk</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{ Request::routeIs('kategori.index') ? 'active' : '' }}">
-                                <a href="{{ route('kategori.index') }}" class="menu-link">
-                                    <div>Kategori Produk</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ Request::routeIs('produk.index') ? 'active' : '' }}">
-                                <a href="{{ route('produk.index') }}" class="menu-link">
-                                    <div>Produk</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ Request::routeIs('supplier.index') ? 'active' : '' }}">
-                                <a href="{{ route('supplier.index') }}" class="menu-link">
-                                    <div>Supplier</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ Request::routeIs('penerimaan_barang.index') ? 'active' : '' }}">
-                                <a href="{{ route('penerimaan_barang.index') }}" class="menu-link">
-                                    <div>Penerimaan Barang</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    @if (Auth::user()->role == 'admin')
+                        {{-- Manajemen Produk --}}
+                        <li
+                            class="menu-item {{ Request::routeIs('kategori.index') || Request::routeIs('produk.index') || Request::routeIs('supplier.index') || Request::routeIs('penerimaan_barang.index') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon bx bx-store-alt"></i>
+                                <div>Pengelolaan Barang</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ Request::routeIs('kategori.index') ? 'active' : '' }}">
+                                    <a href="{{ route('kategori.index') }}" class="menu-link">
+                                        <div>Kategori Produk</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{ Request::routeIs('produk.index') ? 'active' : '' }}">
+                                    <a href="{{ route('produk.index') }}" class="menu-link">
+                                        <div>Produk</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{ Request::routeIs('supplier.index') ? 'active' : '' }}">
+                                    <a href="{{ route('supplier.index') }}" class="menu-link">
+                                        <div>Supplier</div>
+                                    </a>
+                                </li>
+                                <li
+                                    class="menu-item {{ Request::routeIs('penerimaan_barang.index') ? 'active' : '' }}">
+                                    <a href="{{ route('penerimaan_barang.index') }}" class="menu-link">
+                                        <div>Penerimaan Barang</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        {{-- <li class="menu-header small">
+                            <span class="menu-header-text">Manajemen Pelanggan</span>
+                        </li> --}}
+
+                        <li
+                            class="menu-item {{ Request::routeIs('member.index') || Request::routeIs('pengajuan_barang.index') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon bx bx-group"></i>
+                                <div>Data Member</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ Request::routeIs('member.index') ? 'active' : '' }}">
+                                    <a href="{{ route('member.index') }}" class="menu-link">
+                                        <div>Member </div>
+                                    </a>
+                                </li>
+                                <li
+                                    class="menu-item {{ Request::routeIs('pengajuan_barang.index') ? 'active' : '' }}">
+                                    <a href="{{ route('pengajuan_barang.index') }}" class="menu-link">
+                                        <div>Pengajuan Barang</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    @endif
 
                     {{-- <!-- Penerimaan Produk -->
                     <li class="menu-item {{ Request::routeIs('penerimaan_barang.index') ? 'active' : '' }}">
@@ -216,77 +208,85 @@
                             <div>Penerimaan Barang</div>
                         </a>
                     </li>     --}}
-                    
-                    <li class="menu-header small">
-                        <span class="menu-header-text">Manajemen Pelanggan</span>
-                    </li>
-                    
-                    <!-- Manajemen Member -->
-                    <li class="menu-item {{ Request::routeIs('member.index') ? 'active' : '' }}">
-                        <a href="{{ route('member.index') }}" class="menu-link">
-                            <i class="menu-icon bx bx-id-card"></i>
-                            <div>Member</div>
-                        </a>
-                    </li>     
-                    
-                    <!-- Manajemen Penjualan -->
-                    <li class="menu-item {{ Request::routeIs('penjualan.index') || Request::routeIs('penjualan.create') ? 'active open' : '' }}">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon bx bx-cart-alt"></i>
-                            <div>Penjualan</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{ Request::routeIs('penjualan.index') ? 'active' : '' }}">
-                                <a href="{{ route('penjualan.index') }}" class="menu-link">
-                                    <div>Penjualan Produk</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ Request::routeIs('penjualan.create') ? 'active' : '' }}">
-                                <a href="{{ route('penjualan.create') }}" class="menu-link">
-                                    <div>Tambah Penjualan</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>  
 
-                    <li class="menu-item {{ Request::routeIs('pembayaran.index') ? 'active' : '' }}">
-                        <a href="{{ route('pembayaran.index') }}" class="menu-link">
-                            <i class="menu-icon bx bx-money"></i>
-                            <div>Pembayaran</div>
-                        </a>
-                    </li> 
-                    
-                    <!-- Manajemen Laporan -->
-                    <li class="menu-item {{ Request::routeIs('laporan.penjualan') || Request::routeIs('laporan.transaksi') ? 'active open' : '' }}">
-                        <a href="javascript:void(0);" class="menu-link menu-toggle">
-                            <i class="menu-icon bx bx-file"></i>
-                            <div>Laporan</div>
-                        </a>
-                        <ul class="menu-sub">
-                            <li class="menu-item {{ Request::routeIs('laporan.penjualan') ? 'active' : '' }}">
-                                <a href="{{ route('laporan.penjualan') }}" class="menu-link">
-                                    <div>Penjualan Produk</div>
-                                </a>
-                            </li>
-                            <li class="menu-item {{ Request::routeIs('laporan.transaksi') ? 'active' : '' }}">
-                                <a href="{{ route('laporan.transaksi') }}" class="menu-link">
-                                    <div>Transaksi Produk</div>
-                                </a>
-                            </li>
-                        </ul>
-                    </li> 
+                    @if (Auth::user()->role == 'kasir')
+                        <!-- Manajemen Penjualan -->
+                        <li
+                            class="menu-item {{ Request::routeIs('penjualan.index') || Request::routeIs('penjualan.create') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon bx bx-cart-alt"></i>
+                                <div>Penjualan</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ Request::routeIs('penjualan.index') ? 'active' : '' }}">
+                                    <a href="{{ route('penjualan.index') }}" class="menu-link">
+                                        <div>Penjualan Produk</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{ Request::routeIs('penjualan.create') ? 'active' : '' }}">
+                                    <a href="{{ route('penjualan.create') }}" class="menu-link">
+                                        <div>Tambah Penjualan</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
 
-                    <li class="menu-header small">
-                        <span class="menu-header-text">Manajemen Pengguna</span>
-                    </li>
+                        <li class="menu-item {{ Request::routeIs('pembayaran.index') ? 'active' : '' }}">
+                            <a href="{{ route('pembayaran.index') }}" class="menu-link">
+                                <i class="menu-icon bx bx-money"></i>
+                                <div>Pembayaran</div>
+                            </a>
+                        </li>
+                    @endif
 
-                    <!-- Manajemen Pengguna -->
-                    <li class="menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">
-                        <a href="{{ route('users.index') }}" class="menu-link">
-                            <i class="menu-icon bx bx-user-circle"></i>
-                            <div>Pengguna</div>
-                        </a>
-                    </li>     
+                    @if (Auth::user()->role == 'kasir')
+                        <li class="menu-item {{ Request::routeIs('laporan.transaksi') ? 'active' : '' }}">
+                            <a href="{{ route('laporan.transaksi') }}" class="menu-link">
+                                <i class="menu-icon bx bx-store"></i>
+                                <div>Transaksi Penjualan</div>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if (Auth::user()->role == 'admin')
+                        <li class="menu-header small">
+                            <span class="menu-header-text">Referensi</span>
+                        </li>
+
+                        <li
+                            class="menu-item {{ Request::routeIs('laporan.penjualan') || Request::routeIs('laporan.transaksi') || Request::routeIs('laporan.penerimaan_barang') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <i class="menu-icon bx bx-file"></i>
+                                <div>Laporan</div>
+                            </a>
+                            <ul class="menu-sub">
+                                <li class="menu-item {{ Request::routeIs('laporan.penjualan') ? 'active' : '' }}">
+                                    <a href="{{ route('laporan.penjualan') }}" class="menu-link">
+                                        <div>Penjualan Produk</div>
+                                    </a>
+                                </li>
+                                <li class="menu-item {{ Request::routeIs('laporan.transaksi') ? 'active' : '' }}">
+                                    <a href="{{ route('laporan.transaksi') }}" class="menu-link">
+                                        <div>Transaksi Penjualan Produk</div>
+                                    </a>
+                                </li>
+                                <li
+                                    class="menu-item {{ Request::routeIs('laporan.penerimaan_barang') ? 'active' : '' }}">
+                                    <a href="{{ route('laporan.penerimaan_barang') }}" class="menu-link">
+                                        <div>Transaksi Pembelian Produk</div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Manajemen Pengguna -->
+                        <li class="menu-item {{ Request::routeIs('users.index') ? 'active' : '' }}">
+                            <a href="{{ route('users.index') }}" class="menu-link">
+                                <i class="menu-icon bx bx-user-circle"></i>
+                                <div>Pengguna</div>
+                            </a>
+                        </li>
+                    @endif
             </aside>
 
             <div class="menu-mobile-toggler d-xl-none rounded-1">
@@ -367,8 +367,14 @@
                                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);"
                                     data-bs-toggle="dropdown">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('asset') }}/assets/img/avatars/1.png" alt
-                                            class="rounded-circle" />
+                                        @if (Auth::user()->role == 'admin')
+                                            <img src="{{ asset('asset') }}/assets/img/avatars/10.png" alt
+                                                class="rounded-circle" />
+                                        @endif
+                                        @if (Auth::user()->role == 'kasir')
+                                            <img src="{{ asset('asset') }}/assets/img/avatars/2.png" alt
+                                                class="rounded-circle" />
+                                        @endif
                                     </div>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
@@ -377,28 +383,37 @@
                                             <div class="d-flex">
                                                 <div class="flex-shrink-0 me-3">
                                                     <div class="avatar avatar-online">
-                                                        <img src="{{ asset('asset') }}/assets/img/avatars/1.png" alt
-                                                            class="w-px-40 h-auto rounded-circle" />
+                                                        @if (Auth::user()->role == 'admin')
+                                                            <img src="{{ asset('asset') }}/assets/img/avatars/10.png"
+                                                                alt class="rounded-circle" />
+                                                        @endif
+                                                        @if (Auth::user()->role == 'kasir')
+                                                            <img src="{{ asset('asset') }}/assets/img/avatars/2.png"
+                                                                alt class="rounded-circle" />
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                    <h6 class="mb-0">{{Auth::user()->name}}</h6>
-                                                    <small class="text-body-secondary">{{Auth::user()->role}}</small>
+                                                    <h6 class="mb-0">{{ Auth::user()->name }}</h6>
+                                                    <small
+                                                        class="text-body-secondary">{{ Auth::user()->role }}</small>
                                                 </div>
                                             </div>
                                         </a>
                                     </li>
-                                    
+
                                     <li>
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            style="display: none;">
                                             @csrf
                                         </form>
-                                        <a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                        <a class="dropdown-item" href="#"
+                                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                             <i class="icon-base bx bx-power-off icon-md me-3"></i>
                                             <span>Log Out</span>
                                         </a>
                                     </li>
-                                    
+
                                 </ul>
                             </li>
                             <!--/ User -->
