@@ -14,6 +14,12 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="card">
             <h5 class="card-header text-md-start text-center">Tabel Supplier</h5>
             <div class="card-datatable">
@@ -124,24 +130,56 @@
                         targets: -2,
                         render: function(e, t, a, s) {
                             var r = {
-                                1: { title: "Current", class: "bg-label-primary" },
-                                2: { title: "Professional", class: "bg-label-success" },
-                                3: { title: "Rejected", class: "bg-label-danger" },
-                                4: { title: "Resigned", class: "bg-label-warning" },
-                                5: { title: "Applied", class: "bg-label-info" },
+                                1: {
+                                    title: "Current",
+                                    class: "bg-label-primary"
+                                },
+                                2: {
+                                    title: "Professional",
+                                    class: "bg-label-success"
+                                },
+                                3: {
+                                    title: "Rejected",
+                                    class: "bg-label-danger"
+                                },
+                                4: {
+                                    title: "Resigned",
+                                    class: "bg-label-warning"
+                                },
+                                5: {
+                                    title: "Applied",
+                                    class: "bg-label-info"
+                                },
                             };
-                            return r[a] ? `<span class="badge ${r[a].class}">${r[a].title}</span>` : e;
+                            return r[a] ?
+                                `<span class="badge ${r[a].class}">${r[a].title}</span>` : e;
                         },
                     }],
                     scrollX: true,
                     layout: {
                         topStart: {
                             rowClass: "row mx-3 my-0 justify-content-between",
-                            features: [{ pageLength: { menu: [7, 10, 25, 50, 100], text: "Show_MENU_entries" } }],
+                            features: [{
+                                pageLength: {
+                                    menu: [7, 10, 25, 50, 100],
+                                    text: "Show_MENU_entries"
+                                }
+                            }],
                         },
-                        topEnd: { search: { placeholder: "" } },
-                        bottomStart: { rowClass: "row mx-3 justify-content-between", features: ["info"] },
-                        bottomEnd: { paging: { firstLast: false } },
+                        topEnd: {
+                            search: {
+                                placeholder: ""
+                            }
+                        },
+                        bottomStart: {
+                            rowClass: "row mx-3 justify-content-between",
+                            features: ["info"]
+                        },
+                        bottomEnd: {
+                            paging: {
+                                firstLast: false
+                            }
+                        },
                     },
                     language: {
                         paginate: {
@@ -160,7 +198,8 @@
             // Tambah Supplier
             document.getElementById('createProductButton').addEventListener('click', function() {
                 document.getElementById('modalTitle').innerText = "Tambah Supplier";
-                document.getElementById('productForm').setAttribute('action', "{{ route('supplier.store') }}");
+                document.getElementById('productForm').setAttribute('action',
+                    "{{ route('supplier.store') }}");
                 document.getElementById('method').value = "POST";
                 document.getElementById('submitButton').innerText = "Simpan";
 
@@ -182,7 +221,8 @@
                     let alamat = this.getAttribute('data-alamat');
 
                     document.getElementById('modalTitle').innerText = "Edit Supplier";
-                    document.getElementById('productForm').setAttribute('action', `{{ url('supplier') }}/${id}`);
+                    document.getElementById('productForm').setAttribute('action',
+                        `{{ url('supplier') }}/${id}`);
                     document.getElementById('method').value = "PUT";
                     document.getElementById('submitButton').innerText = "Update";
 

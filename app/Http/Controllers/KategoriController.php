@@ -15,7 +15,8 @@ class KategoriController extends Controller
         $user = Auth::user();
         Log::info('Memuat halaman daftar kategori.', ['user_id' => $user->id, 'email' => $user->email]);
 
-        $kategori = KategoriProduk::orderBy('created_at', 'desc')->get();
+        // $kategori = KategoriProduk::orderBy('created_at', 'desc')->get();
+        $kategori = KategoriProduk::orderBy('created_at', 'desc')->whereNull('deleted_at')->get();
 
         Log::info('Data kategori berhasil diambil.', ['jumlah_kategori' => $kategori->count()]);
 
@@ -102,14 +103,23 @@ class KategoriController extends Controller
     public function destroy($id)
     {
         $user = Auth::user();
-        $kategori = KategoriProduk::findOrFail($id);
-
-        Log::info('Menghapus kategori.', ['user_id' => $user->id, 'id' => $id, 'nama_kategori' => $kategori->nama_kategori]);
-
-        $kategori->delete();
-
+        $kategori = KategoriProduk::with('produks')->findOrFail($id);
+    
+        // Cek apakah kategori punya produk
+        if ($kategori->produk->count() > 0) {
+            return redirect()->route('kategori.index')->with('error', 'Kategori tidak bisa dihapus karena masih memiliki produk.');
+        }
+    
+        Log::info('Menghapus kategori.', [
+            'user_id' => $user->id,
+            'id' => $id,
+            'nama_kategori' => $kategori->nama_kategori
+        ]);
+    
+        $kategori->delete(); // Soft delete
+    
         Log::info('Kategori berhasil dihapus.', ['id' => $id]);
-
+    
         // Simpan aktivitas ke database
         ActivityLog::create([
             'action' => 'Hapus Kategori',
@@ -122,7 +132,8 @@ class KategoriController extends Controller
                 'waktu' => now(),
             ]
         ]);
-
+    
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus.');
     }
+    
 }

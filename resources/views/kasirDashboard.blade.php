@@ -42,7 +42,7 @@
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between mb-4">
                             <div class="avatar flex-shrink-0 w-px-40 h-px-40">
-                                <img src="{{ asset('asset') }}/assets/img/icons/unicons/cc-warning.png" alt="wallet info"
+                                <img src="{{ asset('asset') }}/assets/img/icons/unicons/briefcase.png" alt="wallet info"
                                     class="rounded" />
                             </div>
                             <div class="dropdown">
@@ -71,7 +71,7 @@
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between mb-4">
                             <div class="avatar flex-shrink-0 w-px-40 h-px-40">
-                                <img src="{{ asset('asset') }}/assets/img/icons/unicons/cc-warning.png" alt="wallet info"
+                                <img src="{{ asset('asset') }}/assets/img/icons/unicons/wallet.png" alt="wallet info"
                                     class="rounded" />
                             </div>
                             <div class="dropdown">

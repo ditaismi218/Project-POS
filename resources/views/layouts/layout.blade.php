@@ -10,7 +10,7 @@
     <title>PROJECT POS MINIMARKET</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('asset') }}/assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('asset') }}/assets/img/icons/mart.png" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -70,7 +70,7 @@
                         <span class="app-brand-logo demo">
                             <span class="text-primary">
 
-                                <svg width="25" viewBox="0 0 25 42" version="1.1"
+                                {{-- <svg width="25" viewBox="0 0 25 42" version="1.1"
                                     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                                     <defs>
                                         <path
@@ -115,10 +115,11 @@
                                             </g>
                                         </g>
                                     </g>
-                                </svg>
+                                </svg> --}}
+                                <i class="bx bxs-store me-2" style="font-size: 32px;"></i>
                             </span>
                         </span>
-                        <span class="app-brand-text demo menu-text fw-bold ms-2">Sneat</span>
+                        <span class="app-brand-text demo menu-text fw-bold ms-2">GoMart</span>
                     </a>
 
                     <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto">
@@ -147,7 +148,7 @@
                         <li
                             class="menu-item {{ Request::routeIs('kategori.index') || Request::routeIs('produk.index') || Request::routeIs('supplier.index') || Request::routeIs('penerimaan_barang.index') ? 'active open' : '' }}">
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                <i class="menu-icon bx bx-store-alt"></i>
+                                <i class="menu-icon bx bx-box"></i>
                                 <div>Pengelolaan Barang</div>
                             </a>
                             <ul class="menu-sub">
@@ -242,7 +243,7 @@
                     @if (Auth::user()->role == 'kasir')
                         <li class="menu-item {{ Request::routeIs('laporan.transaksi') ? 'active' : '' }}">
                             <a href="{{ route('laporan.transaksi') }}" class="menu-link">
-                                <i class="menu-icon bx bx-store"></i>
+                                <i class="menu-icon bx bx-receipt"></i>
                                 <div>Transaksi Penjualan</div>
                             </a>
                         </li>

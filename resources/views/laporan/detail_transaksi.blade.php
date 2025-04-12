@@ -7,7 +7,7 @@
             <!-- Header Toko -->
             <div class="text-center mb- mt-3">
                 <div class="d-flex align-items-center justify-content-center mb-2">
-                    <i class="bx bx-store me-2" style="font-size: 32px;"></i>
+                    <i class="bx bxs-store me-2" style="font-size: 32px;"></i>
                     <h5 class="fw-bold mb-1" style="font-size: 28px;">GoMart</h5>
                 </div>                
                 <p class="mb-5">📞 0812-3456-7890 | 📍 Jl. Contoh No. 123, Kota</p>

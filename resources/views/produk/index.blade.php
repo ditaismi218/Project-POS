@@ -35,7 +35,7 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $item->kode_barang }}</td>
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->kategori->nama_kategori }}</td>
+                                <td>{{ $item->kategori->nama_kategori ?? 'Tidak ada kategori' }}</td>
                                 <td>
                                     @if ($item->gambar)
                                         <img src="{{ asset('storage/' . $item->gambar) }}" alt="{{ $item->nama_barang }}" width="50">

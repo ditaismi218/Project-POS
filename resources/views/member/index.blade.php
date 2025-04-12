@@ -25,7 +25,7 @@
                             <th>Nama</th>
                             <th>No Telepon</th>
                             <th>Alamat</th>
-                            <th>Loyalty Points</th>
+                            {{-- <th>Loyalty Points</th> --}}
                             <th>Tanggal Bergabung</th>
                             <th>Aksi</th>
                         </tr>
@@ -38,7 +38,7 @@
                                 <td>{{ $item->nama }}</td>
                                 <td>{{ $item->no_telp }}</td>
                                 <td>{{ $item->alamat }}</td>
-                                <td>{{ $item->loyalty_points ?? 0 }}</td>
+                                {{-- <td>{{ $item->loyalty_points ?? 0 }}</td> --}}
                                 <td>{{ $item->tgl_bergabung }}</td>
                                 <td>
                                     <button class="btn btn-warning"

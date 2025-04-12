@@ -89,24 +89,45 @@ class SupplierController extends Controller
     public function destroy($id)
     {
         $supplier = Supplier::findOrFail($id);
-
-        // Log penghapusan supplier
-        Log::info('Supplier akan dihapus', ['supplier_id' => $id, 'nama_supplier' => $supplier->nama_supplier]);
-        ActivityLog::create([
-            'action' => 'delete_failed',
-            'description' => 'Gagal menghapus supplier - Supplier tidak ditemukan',
-            'data' => json_encode(['supplier_id' => $id, 'user_id' => auth()->id()])
-        ]);
-
+    
+        // Cek apakah supplier sudah pernah mengirim barang (ada relasi dengan penerimaanBarang)
+        if ($supplier->penerimaanBarang()->exists()) {
+            Log::warning('Gagal menghapus supplier karena sudah pernah mengirim barang', [
+                'supplier_id' => $id,
+                'nama_supplier' => $supplier->nama_supplier,
+            ]);
+    
+            ActivityLog::create([
+                'action' => 'delete_failed',
+                'description' => 'Gagal menghapus supplier karena sudah ada data pengiriman',
+                'data' => json_encode([
+                    'supplier_id' => $id,
+                    'user_id' => auth()->id()
+                ])
+            ]);
+    
+            return redirect()->route('supplier.index')->with('error', 'Supplier tidak dapat dihapus karena sudah pernah mengirim barang.');
+        }
+    
+        // Lakukan soft delete
         $supplier->delete();
-
-        Log::info('Supplier berhasil dihapus', ['supplier_id' => $id, 'nama_supplier' => $supplier->nama_supplier]);
+    
+        Log::info('Supplier berhasil dihapus (soft delete)', [
+            'supplier_id' => $id,
+            'nama_supplier' => $supplier->nama_supplier
+        ]);
+    
         ActivityLog::create([
             'action' => 'delete',
             'description' => 'Menghapus supplier',
-            'data' => json_encode(['supplier_id' => $supplier->id, 'nama_supplier' => $supplier->nama_supplier, 'user_id' => auth()->id()])
+            'data' => json_encode([
+                'supplier_id' => $supplier->id,
+                'nama_supplier' => $supplier->nama_supplier,
+                'user_id' => auth()->id()
+            ])
         ]);
-
+    
         return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus.');
     }
+    
 }
