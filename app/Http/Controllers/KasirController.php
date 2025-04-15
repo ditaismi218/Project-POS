@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\Auth;
 
 class KasirController extends Controller
 {
+    // Menampilkan halaman dashboard kasir
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user(); // Ambil user yang sedang login
         Log::info('Kasir mengakses dashboard.', ['user_id' => $user->id, 'email' => $user->email]);
 
-        // Simpan aktivitas ke database
+        // Simpan log aktivitas akses dashboard ke database
         ActivityLog::create([
             'action' => 'Akses Dashboard Kasir',
             'description' => 'Kasir mengakses halaman dashboard kasir',
@@ -28,9 +29,11 @@ class KasirController extends Controller
             ]
         ]);
 
+        // Hitung jumlah member dan jumlah transaksi penjualan
         $jumlahMember = Member::count();
         $jumlahPenjualan = Penjualan::count();
 
+        // Ambil 5 produk terlaris berdasarkan jumlah qty terbanyak
         $produkTerlaris = DB::table('detail_penjualan')
             ->join('produk', 'detail_penjualan.produk_id', '=', 'produk.id')
             ->select('produk.nama_barang', DB::raw('SUM(detail_penjualan.qty) as total_terjual'))
@@ -41,8 +44,11 @@ class KasirController extends Controller
 
         Log::info('Produk terlaris berhasil diambil.', ['produk_terlaris' => $produkTerlaris->toArray()]);
 
+        // Hitung jumlah penjualan pada hari ini
         $jumlahPenjualanHariIni = Penjualan::whereDate('created_at', today())->count();
 
+
+        // Ambil data penjualan harian (tanggal, total, dan jumlah transaksi)
         $penjualanHarian = DB::table('penjualan')
             ->select(
                 DB::raw('DATE(created_at) as tanggal'),
@@ -55,7 +61,7 @@ class KasirController extends Controller
 
         Log::info('Data penjualan harian berhasil diambil.', ['penjualan_harian' => $penjualanHarian->toArray()]);
 
-        // Simpan aktivitas ke database
+        // Simpan log aktivitas melihat statistik penjualan
         ActivityLog::create([
             'action' => 'Lihat Statistik Kasir',
             'description' => 'Kasir melihat statistik di dashboard kasir',
@@ -68,20 +74,24 @@ class KasirController extends Controller
             ]
         ]);
 
+        // Siapkan data untuk chart (grafik)
         $labels = $penjualanHarian->pluck('tanggal');
         $dataPenjualan = $penjualanHarian->pluck('total_penjualan');
         $jumlahTransaksi = $penjualanHarian->pluck('jumlah_transaksi')->toArray();
 
+        // Kirim data ke view kasirDashboard.blade.php
         return view('kasirDashboard', compact('jumlahMember', 'jumlahPenjualan', 'produkTerlaris', 'labels', 'dataPenjualan', 'jumlahPenjualanHariIni', 'jumlahTransaksi'));
     }
 
+    // Filter data penjualan berdasarkan pilihan waktu (hari ini, minggu lalu, dll)
     public function filterPenjualan(Request $request)
     {
         $user = Auth::user();
-        $filter = $request->query('filter');
+        $filter = $request->query('filter'); // Ambil nilai filter dari query string
 
         Log::info("Kasir memfilter penjualan dengan filter: $filter", ['user_id' => $user->id, 'email' => $user->email]);
 
+        // Query dasar untuk penjualan harian
         $query = DB::table('penjualan')
             ->select(
                 DB::raw('DATE(created_at) as tanggal'),
@@ -90,6 +100,7 @@ class KasirController extends Controller
             )
             ->groupBy('tanggal');
 
+        // Terapkan filter berdasarkan nilai yang dipilih
         if ($filter === 'today') {
             $query->whereDate('created_at', today());
         } elseif ($filter === 'yesterday') {
@@ -106,11 +117,12 @@ class KasirController extends Controller
                 ->whereYear('created_at', today()->subMonth()->year);
         }
 
+        // Ambil data hasil filter
         $penjualanHarian = $query->orderBy('tanggal', 'asc')->get();
 
         Log::info('Data penjualan setelah difilter berhasil diambil.', ['filter' => $filter, 'penjualan_harian' => $penjualanHarian->toArray()]);
 
-        // Simpan aktivitas ke database
+        // Simpan log aktivitas filter penjualan
         ActivityLog::create([
             'action' => 'Filter Penjualan Kasir',
             'description' => "Kasir menerapkan filter: $filter",
@@ -123,6 +135,7 @@ class KasirController extends Controller
             ]
         ]);
 
+        // Kirim response JSON untuk ditampilkan di frontend
         return response()->json([
             'labels' => $penjualanHarian->pluck('tanggal'),
             'dataPenjualan' => $penjualanHarian->pluck('total_penjualan'),

@@ -13,28 +13,42 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+// Controller utama untuk mengatur logika terkait penjualan 
 class PenjualanController extends Controller
 {
+    /**
+     * Menampilkan halaman daftar penjualan.
+     * Mengambil data penjualan beserta relasi user dan member.
+     */
     public function index()
     {
+        // Catat log akses halaman daftar penjualan
         Log::info('Mengakses halaman daftar penjualan oleh user', ['user_id' => Auth::id()]);
 
+        // Ambil seluruh data penjualan dengan relasi user dan member, urut dari terbaru
         $penjualan = Penjualan::with('user', 'member')->orderBy('created_at', 'desc')->get();
         Log::info('Data penjualan diambil', ['jumlah_penjualan' => $penjualan->count()]);
 
+        // Ambil data semua member
         $members = Member::all();
+
+        // Ambil produk dengan relasi penerimaanBarang (untuk mengambil harga jual terbaru)
         $produk = Produk::with([
             'penerimaanBarang' => function ($query) {
-                $query->orderBy('tgl_masuk', 'desc');
+                $query->orderBy('tgl_masuk', 'desc'); // Urutkan harga jual dari yang terbaru
             }
         ])->get()->map(function ($p) {
-            $p->harga_jual = $p->penerimaanBarang->first()->harga_jual ?? 0;
+            $p->harga_jual = $p->penerimaanBarang->first()->harga_jual ?? 0; // Ambil harga jual terbaru jika ada
             return $p;
         });
 
+        // Tampilkan view penjualan.index dengan data penjualan, member, dan produk
         return view('penjualan.index', compact('penjualan', 'members', 'produk'));
     }
 
+    /**
+     * Menyimpan data transaksi penjualan baru ke dalam database.
+     */
     public function store(Request $request)
     {
         // Validasi data
@@ -89,24 +103,27 @@ class PenjualanController extends Controller
                     ->orderBy('tgl_masuk', 'asc')
                     ->get();
 
+                // Jika tidak ada stok, batalkan transaksi
                 if ($stok_tersedia->isEmpty()) {
                     Log::warning("Stok produk habis!", ['produk_id' => $produk_id]);
                     throw new \Exception("Stok produk ID $produk_id habis!");
                 }
 
+                // Ambil stok dari tabel penerimaan sampai kebutuhan qty terpenuhi
                 foreach ($stok_tersedia as $stok) {
                     if ($qty <= 0)
                         break;
 
                     $ambilQty = min($qty, $stok->qty);
-                    $subtotal = $ambilQty * $hargaJualTerbaru; // Gunakan harga terbaru
+                    $subtotal = $ambilQty * $hargaJualTerbaru;
 
+                    // Simpan detail transaksi
                     DetailPenjualan::create([
                         'penjualan_id' => $penjualan->id,
                         'penerimaan_barang_id' => $stok->id,
                         'produk_id' => $produk_id,
                         'qty' => $ambilQty,
-                        'harga_jual' => $hargaJualTerbaru, // Pakai harga terbaru
+                        'harga_jual' => $hargaJualTerbaru,
                         'sub_total' => $subtotal,
                     ]);
 
@@ -129,7 +146,7 @@ class PenjualanController extends Controller
                         ])
                     ]);
 
-                    // Kurangi stok
+                    // Update stok
                     $stok->qty -= $ambilQty;
                     $stok->save();
 
@@ -139,12 +156,12 @@ class PenjualanController extends Controller
 
             }
 
-            // Update total bayar di tabel penjualan
+            // Update total pembayaran penjualan
             $penjualan->update(['total_bayar' => $totalBayar]);
 
             Log::info('Total bayar diperbarui', ['penjualan_id' => $penjualan->id, 'total_bayar' => $totalBayar]);
 
-            // Simpan perubahan total bayar ke ActivityLog
+            // Log perubahan total bayar
             ActivityLog::create([
                 'action' => 'update',
                 'description' => 'Total bayar diperbarui setelah transaksi selesai',
@@ -156,53 +173,91 @@ class PenjualanController extends Controller
 
             DB::commit();
 
+            // Redirect ke halaman pembayaran tanpa menambahkan session 'success'
             return redirect()->route('pembayaran.create', [
-                'penjualan' => $penjualan->id,
-                'success' => 'Penjualan berhasil ditambah, silakan lanjutkan pembayaran'
+                'penjualan' => $penjualan->id
             ]);
+
+            // print_r("berhasil");
 
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error('Gagal menyimpan penjualan: ' . $th->getMessage(), ['trace' => $th->getTraceAsString()]);
             return redirect()->route('penjualan.create')->with('error', 'Penjualan gagal ditambah: ' . $th->getMessage());
+            // print_r("gagal");
+            // print_r($th->getMessage());
         }
     }
 
+    /**
+     * Menampilkan form untuk membuat transaksi penjualan baru.
+     */
     public function create(Request $request)
     {
-        Log::info('Mengakses halaman pembuatan penjualan', ['user_id' => Auth::id()]);
-
         $search = $request->input('search');
-        if ($search) {
-            Log::info('User melakukan pencarian produk', ['search' => $search]);
-        }
-
+    
         $members = Member::all();
+    
+        // Produk untuk tampilan utama (paginate)
         $produk = Produk::whereHas('penerimaanBarang', function ($query) {
-            $query->havingRaw('SUM(qty) > 0');
-        })
+                $query->select('produk_id')
+                    ->groupBy('produk_id')
+                    ->havingRaw('SUM(qty) > 0');
+            })
+            ->with(['kategori', 'penerimaanBarang' => function($q) {
+                $q->select('produk_id', 'qty', 'harga_jual', 'tgl_masuk')
+                  ->orderBy('tgl_masuk', 'desc');
+            }])
+            ->when($search, function ($query, $search) {
+                return $query->where('nama_barang', 'like', "%$search%")
+                             ->orWhere('kode_barang', 'like', "%$search%");
+            })
+            ->paginate(12)
+            ->appends(['search' => $search]);
+    
+        // Semua produk untuk scanning barcode - DIUBAH
+        $dataProduk = Produk::whereHas('penerimaanBarang', function ($query) {
+                $query->select('produk_id')
+                    ->groupBy('produk_id')
+                    ->havingRaw('SUM(qty) > 0');
+            })
             ->with([
-                'penerimaanBarang' => function ($query) {
-                    $query->select('produk_id', 'qty', 'harga_jual');
+                'kategori',
+                'penerimaanBarang' => function($q) {
+                    $q->select('produk_id', 'qty', 'harga_jual', 'tgl_masuk')
+                      ->orderBy('tgl_masuk', 'desc');
                 }
             ])
-            ->when($search, function ($query) use ($search) {
-                return $query->where('nama_barang', 'like', "%$search%");
-            })
-            ->paginate(4)
-            ->appends(['search' => $search]);
-
-        Log::info('Produk yang ditemukan', ['jumlah_produk' => $produk->total()]);
-
-        return view('penjualan.create', compact('members', 'produk', 'search'));
+            ->get()
+            ->map(function ($item) {
+                $totalStok = $item->penerimaanBarang->sum('qty');
+                $latestReceipt = $item->penerimaanBarang->first();
+                
+                return [
+                    'id' => $item->id,
+                    'kode_barang' => $item->kode_barang,
+                    'nama_barang' => $item->nama_barang,
+                    'harga_jual' => $latestReceipt ? $latestReceipt->harga_jual : 0,
+                    'stok' => $totalStok,
+                    'gambar' => $item->gambar,
+                    'kategori' => $item->kategori
+                ];
+            });
+    
+        return view('penjualan.create', compact('members', 'produk', 'search', 'dataProduk'));
     }
 
+    /**
+     * Menampilkan detail penjualan berdasarkan ID tertentu.
+     */
     public function show($id)
     {
         Log::info('Mengakses halaman detail penjualan', ['user_id' => Auth::id(), 'penjualan_id' => $id]);
 
+        // Ambil penjualan berdasarkan ID beserta relasinya
         $penjualan = Penjualan::with(['detailPenjualan.produk', 'user', 'member'])->find($id);
 
+        // Jika data tidak ditemukan, redirect dengan error
         if (!$penjualan) {
             Log::warning('Penjualan tidak ditemukan', ['penjualan_id' => $id]);
 
@@ -230,6 +285,4 @@ class PenjualanController extends Controller
 
         return view('penjualan.detail', compact('penjualan'));
     }
-
-
 }

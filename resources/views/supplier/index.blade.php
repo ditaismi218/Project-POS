@@ -50,17 +50,24 @@
                                         <i class="bx bx-edit"></i>
                                     </button>
 
-                                    <button class="btn btn-danger delete-button" data-id="{{ $item->id }}"
-                                        data-nama="{{ $item->nama_supplier }}">
-                                        <i class="bx bx-trash"></i>
-                                    </button>
+                                    @if ($item->penerimaan_barang_count > 0)
+                                        <button class="btn btn-secondary" disabled title="Supplier sedang digunakan">
+                                            <i class="bx bx-lock-alt"></i>
+                                        </button>
+                                    @else
+                                        <button class="btn btn-danger delete-button" data-id="{{ $item->id }}"
+                                            data-nama="{{ $item->nama_supplier }}">
+                                            <i class="bx bx-trash"></i>
+                                        </button>
 
-                                    <form id="delete-form-{{ $item->id }}"
-                                        action="{{ route('supplier.destroy', $item->id) }}" method="POST"
-                                        style="display:none;">
-                                        @csrf
-                                        @method('DELETE')
-                                    </form>
+                                        <form id="delete-form-{{ $item->id }}"
+                                            action="{{ route('supplier.destroy', $item->id) }}" method="POST"
+                                            style="display:none;">
+                                            @csrf
+                                            @method('DELETE')
+                                        </form>
+                                    @endif
+
                                 </td>
                             </tr>
                         @endforeach
@@ -211,14 +218,14 @@
                 productModal.show();
             });
 
-            // Edit Supplier
-            document.querySelectorAll('.edit-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    let id = this.getAttribute('data-id');
-                    let nama = this.getAttribute('data-nama');
-                    let telepon = this.getAttribute('data-telepon');
-                    let email = this.getAttribute('data-email');
-                    let alamat = this.getAttribute('data-alamat');
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.closest('.edit-button')) {
+                    const button = e.target.closest('.edit-button');
+                    const id = button.getAttribute('data-id');
+                    const nama = button.getAttribute('data-nama');
+                    const telepon = button.getAttribute('data-telepon');
+                    const email = button.getAttribute('data-email');
+                    const alamat = button.getAttribute('data-alamat');
 
                     document.getElementById('modalTitle').innerText = "Edit Supplier";
                     document.getElementById('productForm').setAttribute('action',
@@ -232,14 +239,14 @@
                     document.getElementById('alamat').value = alamat;
 
                     productModal.show();
-                });
+                }
             });
 
-            // Hapus Supplier
-            document.querySelectorAll('.delete-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    let id = this.getAttribute('data-id');
-                    let nama = this.getAttribute('data-nama');
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.closest('.delete-button')) {
+                    let button = e.target.closest('.delete-button');
+                    let id = button.getAttribute('data-id');
+                    let nama = button.getAttribute('data-nama');
 
                     Swal.fire({
                         title: "Apakah Anda yakin?",
@@ -255,7 +262,7 @@
                             document.getElementById(`delete-form-${id}`).submit();
                         }
                     });
-                });
+                }
             });
         });
     </script>

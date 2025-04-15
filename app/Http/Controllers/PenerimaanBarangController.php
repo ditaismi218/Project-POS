@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Log;
 
 class PenerimaanBarangController extends Controller
 {
+    /**
+     * Menampilkan halaman daftar penerimaan barang.
+     */
     public function index()
     {
         Log::info('Menampilkan semua data penerimaan barang.');
@@ -23,37 +26,47 @@ class PenerimaanBarangController extends Controller
             'data' => ['user_id' => auth()->id()]
         ]);
 
+        // Ambil data penerimaan barang dan lakukan agregasi jumlah & total harga
         $penerimaan = PenerimaanBarang::selectRaw('
-            produk_id, 
-            supplier_id, 
-            SUM(qty) as total_qty, 
-            SUM(harga_total) as total_harga
-        ')
-            ->groupBy('produk_id', 'supplier_id')
-            ->with(['produk', 'supplier'])
+    produk_id, 
+    SUM(qty) as total_qty, 
+    SUM(harga_total) as total_harga
+')
+            ->groupBy('produk_id')
+            ->with('produk')
             ->orderBy('created_at', 'desc')
             ->get();
 
+
+        // Ambil data supplier & produk untuk kebutuhan filter atau tampilan
         $suppliers = Supplier::all();
         $products = Produk::all();
 
         return view('penerimaan_barang.index', compact('penerimaan', 'suppliers', 'products'));
     }
 
+    /**
+     * Menampilkan form untuk membuat penerimaan barang baru.
+     */
     public function create()
     {
         Log::info('Menampilkan halaman pembuatan penerimaan barang.');
 
+        // Ambil data supplier dan produk untuk form input
         $suppliers = Supplier::all();
         $products = Produk::all();
 
         return view('penerimaan_barang.create', compact('suppliers', 'products'));
     }
 
+    /**
+     * Menyimpan data penerimaan barang ke database.
+     */
     public function store(Request $request)
     {
         Log::info('Menerima request untuk menambahkan penerimaan barang.', ['data' => $request->all()]);
 
+        // Validasi input form
         $request->validate([
             'supplier_id' => 'required',
             'tgl_masuk' => 'required|date',
@@ -67,15 +80,18 @@ class PenerimaanBarangController extends Controller
         try {
             DB::beginTransaction();
 
+            // Ambil data penerimaan terakhir hari ini untuk membuat kode unik
             $lastPenerimaan = DB::table('penerimaan_barang')
                 ->whereDate('created_at', now()->toDateString())
                 ->orderBy('id', 'desc')
                 ->lockForUpdate()
                 ->first();
 
-            $newNumber = $lastPenerimaan ? str_pad((int)substr($lastPenerimaan->kode_penerimaan, -3) + 1, 3, '0', STR_PAD_LEFT) : '001';
+            // Buat nomor urut penerimaan barang
+            $newNumber = $lastPenerimaan ? str_pad((int) substr($lastPenerimaan->kode_penerimaan, -3) + 1, 3, '0', STR_PAD_LEFT) : '001';
             $kodePenerimaan = 'PNR-' . now()->format('Ymd') . '-' . $newNumber;
 
+            // Simpan masing-masing produk dalam satu transaksi
             foreach ($request->produk_id as $key => $produk_id) {
                 PenerimaanBarang::create([
                     'kode_penerimaan' => $kodePenerimaan++,
@@ -110,6 +126,9 @@ class PenerimaanBarangController extends Controller
         }
     }
 
+    /**
+     * Menampilkan detail penerimaan barang berdasarkan ID produk.
+     */
     public function show($id)
     {
         Log::info('Menampilkan detail penerimaan barang.', ['produk_id' => $id]);
@@ -128,6 +147,48 @@ class PenerimaanBarangController extends Controller
         return view('penerimaan_barang.show', compact('penerimaan', 'suppliers', 'products'));
     }
 
+    /**
+     * Mengupdate data penerimaan barang.
+     */
+    public function update(Request $request, $id)
+    {
+        try {
+            // Validasi input form
+            $request->validate([
+                'tgl_masuk' => 'required|date',
+                'qty' => 'required|numeric',
+                'harga_jual' => 'required|numeric',
+                'harga_satuan' => 'required|numeric',
+                'expired_date' => 'nullable|date',
+            ]);
+
+            $penerimaan = PenerimaanBarang::findOrFail($id);
+
+            // Update data penerimaan
+            $penerimaan->update([
+                'tgl_masuk' => $request->tgl_masuk,
+                'qty' => $request->qty,
+                'harga_jual' => $request->harga_jual,
+                'harga_satuan' => $request->harga_satuan,
+                'harga_total' => $request->qty * $request->harga_satuan,
+                'expired_date' => $request->expired_date,
+            ]);
+
+            ActivityLog::create([
+                'action' => 'Update Penerimaan Barang',
+                'description' => "Penerimaan barang ID: {$id} telah diupdate.",
+                'data' => ['penerimaan_barang_id' => $id, 'user_id' => auth()->id()]
+            ]);
+
+            return redirect()->back()->with('success', 'Data berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Menghapus (soft delete) data penerimaan barang.
+     */
     public function destroy($id)
     {
         try {

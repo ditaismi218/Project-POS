@@ -8,7 +8,7 @@
     @endif
 
     <div class="card">
-        <h5 class="card-header text-md-start text-center">Tabel Logs</h5>
+        <h5 class="card-header text-md-start text-center">Data Penjualan</h5>
         <div class="card-datatable">
             <table class="table table-striped dt-scrollableTable">
                 <thead>
@@ -32,7 +32,19 @@
                             <td>{{ ucfirst($p->status) }}</td>
                             <td>{{ $p->created_at->format('d-m-Y') }}</td>
                             <td>
-                                <a href="{{ route('penjualan.show', $p->id) }}" class="btn btn-info">Detail</a>
+                                <!-- Tombol Detail -->
+                                <a href="{{ route('penjualan.show', $p->id) }}"
+                                    class="btn btn-info flex items-center justify-center h-12 px-4 rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 focus:outline-none transition duration-300 ease-in-out">
+                                    <i class="bx bx-show"></i>
+                                </a>
+
+                                <!-- Tombol Create Pembayaran dengan Ikon -->
+                                <a href="{{ route('pembayaran.create', $p->id) }}"
+                                    class="btn btn-primary flex items-center justify-center h-12 px-4 rounded-md text-white bg-purple-400 hover:bg-purple-500 focus:ring-2 focus:ring-purple-300 focus:outline-none transition duration-300 ease-in-out"
+                                    @if ($p->status == 'lunas') disabled style="pointer-events: none; opacity: 0.5;" @endif>
+                                    <i class="bx bx-credit-card text-xl"></i>
+                                </a>
+
                             </td>
                         </tr>
                     @empty

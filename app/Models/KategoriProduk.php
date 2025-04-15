@@ -17,12 +17,12 @@ class KategoriProduk extends Model
     ];
 
     protected $dates = ['deleted_at'];
-    public function produk()
-    {
-        return $this->hasMany(Produk::class);
-    }
+    // public function produk()
+    // {
+    //     return $this->hasMany(Produk::class);
+    // }
 
-    public function produks()
+    public function produk()
     {
         return $this->hasMany(Produk::class, 'kategori_id');
     }

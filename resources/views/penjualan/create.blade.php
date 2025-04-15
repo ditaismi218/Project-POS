@@ -1,149 +1,212 @@
 @extends('layouts.layout')
 
 @section('content')
-    <div class="card shadow-sm border-0 rounded-lg">
-        <div class="card-header">
-            <h4 class="mb-0">Tambah Penjualan</h4>
-        </div>
-        <div class="card-body">
-
-            @if (session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
-            @endif
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+    <div class="row">
+        <!-- KIRI: Form Pencarian & Produk -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header">
+                    <h4 class="mb-0">Tambah Penjualan</h4>
                 </div>
-            @endif
+                <div class="card-body">
 
-            <!-- Form Pencarian -->
-            <form method="GET" action="{{ route('penjualan.create') }}">
-                <div class="input-group mb-3">
-                    <input type="text" name="search" class="form-control" placeholder="Cari produk..."
-                        value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary">Cari</button>
-                </div>
-            </form>
+                    @if (session('error'))
+                        <div class="alert alert-danger">{{ session('error') }}</div>
+                    @endif
 
-            <form action="{{ route('penjualan.store') }}" method="POST" onsubmit="updateCart()">
-                @csrf
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
-                <div class="mb-4">
-                    <label for="member_id" class="form-label fw-bold">Pilih Member (Opsional)</label>
-                    <select name="member_id" id="member_id" class="form-select">
-                        <option value="">Umum</option>
-                        @foreach ($members as $member)
-                            <option value="{{ $member->id }}">{{ $member->nama }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                    <!-- Form Pencarian -->
+                    <form method="GET" action="{{ route('penjualan.create') }}">
+                        <div class="input-group mb-3">
+                            <input type="text" name="search" class="form-control" placeholder="Cari produk..."
+                                value="{{ request('search') }}">
+                            <button type="submit" class="btn btn-primary">Cari</button>
+                        </div>
+                    </form>
 
-                {{-- - Tambahkan Kategori & Kasir di Tabel Produk, Tambahkan Diskon --}}
-                <h5 class="mb-3 fw-bold">Pilih Produk</h5>
+                    <!-- Input Barcode Scanner -->
+                    <form onsubmit="handleScanBarcode(event)">
+                        <div class="input-group mb-3">
+                            <input type="text" id="barcodeInput" class="form-control"
+                                placeholder="Scan barcode produk..." autofocus autocomplete="off">
+                        </div>
+                    </form>
 
-                <!-- Daftar Produk -->
-                @if ($produk->count() > 0)
-                    <div class="row g-3" id="produk-container">
-                        @foreach ($produk as $p)
-                            @php
-                                $stok_total = $p->penerimaanBarang->sum('qty');
-                                $harga_jual = $p->penerimaanBarang->sortByDesc('tgl_masuk')->last()->harga_jual ?? 0;
-                            @endphp
+                    <!-- Daftar Produk -->
+                    <h5 class="mb-3 fw-bold">Pilih Produk</h5>
 
-                            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
-                                <div class="card h-100 shadow-sm border-0 rounded">
-                                    <!-- Gambar Produk -->
-                                    <div class="ratio ratio-1x1 bg-light rounded-top">
-                                        <img src="{{ asset('storage/' . $p->gambar) }}" alt="{{ $p->nama_barang }}"
-                                            class="img-fluid rounded-top object-fit-cover">
-                                    </div>
+                    @if ($produk->count() > 0)
+                        <div class="row g-3" id="produk-container">
+                            @foreach ($produk as $p)
+                                @php
+                                    $stok_total = $p->penerimaanBarang->sum('qty');
+                                    // $stok_total = $p->stok;
+                                    $harga_jual =
+                                        \App\Models\PenerimaanBarang::where('produk_id', $p->id)
+                                            ->where('qty', '>', 0)
+                                            ->orderBy('tgl_masuk', 'desc')
+                                            ->orderBy('id', 'desc')
+                                            ->first()->harga_jual ?? 0;
+                                @endphp
 
-                                    <div class="card-body d-flex flex-column">
-                                        <!-- Nama Barang & Kategori -->
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <h6 class="mb-0 fw-bold text-dark">{{ $p->nama_barang }}</h6>
-                                            <small class="text-muted">{{ $p->kategori->nama_kategori ?? '-' }}</small>
+                                <div class="col-lg-4 col-md-6 col-12">
+                                    <div class="card h-100 shadow-sm border-0 rounded">
+                                        <div class="ratio ratio-1x1 bg-light rounded-top">
+                                            <img src="{{ asset('storage/' . $p->gambar) }}" alt="{{ $p->nama_barang }}"
+                                                class="img-fluid rounded-top object-fit-cover">
                                         </div>
 
-                                        <!-- Harga & Stok -->
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div>
-                                                <small class="text-muted">Harga</small>
-                                                <h6 class="mb-0 fw-bold text-primary">
-                                                    Rp {{ number_format($harga_jual, 0, ',', '.') }}
-                                                </h6>
+                                        <div class="card-body d-flex flex-column">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h6 class="mb-0 fw-bold text-dark">{{ $p->nama_barang }}</h6>
+                                                <small class="text-muted">{{ $p->kategori->nama_kategori ?? '-' }}</small>
                                             </div>
-                                            <div>
-                                                <small class="text-muted">Stok</small>
-                                                <h6 class="mb-0"><span
-                                                        id="stok-{{ $p->id }}">{{ $stok_total }}</span></h6>
+
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <div>
+                                                    <small class="text-muted">Harga</small>
+                                                    <h6 class="mb-0 fw-bold text-primary">
+                                                        Rp {{ number_format($harga_jual, 0, ',', '.') }}
+                                                    </h6>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted">Stok</small>
+                                                    <h6 class="mb-0"><span
+                                                            id="stok-{{ $p->id }}">{{ $stok_total }}</span></h6>
+                                                </div>
                                             </div>
+
+                                            <input type="number" class="form-control text-center mb-3 border-0 shadow-sm"
+                                                id="qty-{{ $p->id }}" min="1" max="{{ $stok_total ?? 1 }}"
+                                                value="1">
+
+                                            <button type="button" class="btn btn-primary w-100 mt-auto shadow-sm"
+                                                onclick="tambahKeCart({{ $p->id }}, '{{ $p->nama_barang }}', {{ $harga_jual }}, {{ $stok_total }})">
+                                                <i class="fas fa-cart-plus me-2"></i> Tambah
+                                            </button>
                                         </div>
-
-                                        <!-- Input Quantity -->
-                                        <input type="number" class="form-control text-center mb-3 border-0 shadow-sm"
-                                            id="qty-{{ $p->id }}" min="1" max="{{ $stok_total ?? 1 }}"
-                                            value="1">
-
-                                        <!-- Tombol Tambah -->
-                                        <button type="button" class="btn btn-primary w-100 mt-auto shadow-sm"
-                                            onclick="tambahKeCart({{ $p->id }}, '{{ $p->nama_barang }}', {{ $harga_jual }}, {{ $stok_total }})">
-                                            <i class="fas fa-cart-plus me-2"></i> Tambah
-                                        </button>
                                     </div>
                                 </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-center mt-4">
+                            {{ $produk->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+                        </div>
+                    @else
+                        <p class="text-center text-muted">Tidak ada produk dengan stok tersedia.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- KANAN: Pilih Member & Keranjang (Scrollable) -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-body">
+                    <form action="{{ route('penjualan.store') }}" method="POST" onsubmit="updateCart()">
+                        @csrf
+
+                        <!-- Pilih Member -->
+                        <div class="mb-4">
+                            <label for="member_id" class="form-label fw-bold">Pilih Member (Opsional)</label>
+                            <select name="member_id" id="member_id" class="form-select">
+                                <option value="">Umum</option>
+                                @foreach ($members as $member)
+                                    <option value="{{ $member->id }}">{{ $member->nama }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Keranjang Belanja -->
+                        <h5 class="fw-bold">Keranjang</h5>
+                        <div class="table-responsive mb-4" style="max-height: 300px; overflow-y: auto;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Produk</th>
+                                        <th>Harga</th>
+                                        <th>Jumlah</th>
+                                        <th>Total</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-container">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Belum ada barang di keranjang</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Total Bayar -->
+                        <div class="card shadow-sm border p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold text-muted">Total Bayar:</span>
+                                <h4 id="totalBayar" class="mb-0 text-primary fw-bold">Rp 0</h4>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
 
-                    <!-- Pagination -->
-                    <div class="d-flex justify-content-center mt-4">
-                        {{ $produk->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
-                    </div>
-                @else
-                    <p class="text-center text-muted">Tidak ada produk dengan stok tersedia.</p>
-                @endif
-
-
-
-                <h5 class="mt-4 fw-bold">Keranjang</h5>
-                <div class="table-responsive mb-5">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Produk</th>
-                                <th>Harga</th>
-                                <th>Jumlah</th>
-                                <th>Total</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="cart-container">
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">Belum ada barang di keranjang</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        <button type="submit" class="btn btn-primary w-100" id="submit-btn" disabled>Simpan
+                            Penjualan</button>
+                    </form>
                 </div>
-
-                <div class="card shadow-sm border p-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-semibold text-muted">Total Bayar:</span>
-                        <h4 id="totalBayar" class="mb-0 text-primary fw-bold">Rp 0</h4>
-                    </div>
-                </div>
-
-                {{-- <button type="submit" class="btn btn-primary w-100 mt-5">Simpan Penjualan</button> --}}
-                <button type="submit" class="btn btn-primary w-100 mt-5" id="submit-btn" disabled>Simpan Penjualan</button>
-
-            </form>
+            </div>
         </div>
     </div>
+
+    <script>
+        const produkList = @json($dataProduk);
+        console.log('Data Produk Lengkap:', produkList); // Periksa di console browser
+
+        function handleScanBarcode(event) {
+            event.preventDefault();
+            const barcodeInput = document.getElementById('barcodeInput');
+            const kode = barcodeInput.value.trim().toLowerCase();
+
+            if (!kode) return;
+
+            // Cari produk dengan kode yang sesuai
+            const produk = produkList.find(p =>
+                p.kode_barang.toLowerCase() === kode
+            );
+
+            if (produk) {
+                // Gunakan data yang sudah diproses dari controller
+                tambahKeCart(
+                    produk.id,
+                    produk.nama_barang,
+                    produk.harga_jual,
+                    produk.stok
+                );
+
+                barcodeInput.value = '';
+                barcodeInput.focus();
+            } else {
+                alert('Produk dengan barcode tersebut tidak ditemukan.');
+                barcodeInput.value = '';
+                barcodeInput.focus();
+            }
+        }
+
+        // Pastikan event Enter ditangkap juga
+        const barcodeInput = document.getElementById('barcodeInput');
+        barcodeInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                handleScanBarcode(e);
+            }
+        });
+    </script>
 
     <script>
         let cart = [];
@@ -162,30 +225,37 @@
         }
 
         function tambahKeCart(id, nama, harga, stok) {
-            let qtyInput = document.getElementById(`qty-${id}`);
-            let qty = parseInt(qtyInput.value) || 1;
-
+            // Cari elemen stok yang benar
             let stokElement = document.getElementById(`stok-${id}`);
-            let stokTersedia = parseInt(stokElement.innerText);
+            let stokTersedia = stokElement ? parseInt(stokElement.innerText) : stok;
 
-            if (qty > stokTersedia) {
+            // Cek apakah item sudah ada di cart
+            let existingItem = cart.find(item => item.id === id);
+            let qtyToAdd = 1; // Default quantity
+
+            // Validasi stok
+            if ((existingItem ? existingItem.qty + qtyToAdd : qtyToAdd) > stokTersedia) {
                 alert('Jumlah melebihi stok yang tersedia!');
                 return;
             }
 
-            let existingItem = cart.find(item => item.id === id);
+            // Update atau tambah item ke cart
             if (existingItem) {
-                existingItem.qty += qty;
+                existingItem.qty += qtyToAdd;
             } else {
                 cart.push({
                     id,
                     nama,
                     harga,
-                    qty
+                    qty: qtyToAdd
                 });
             }
 
-            stokElement.innerText = stokTersedia - qty;
+            // Update tampilan stok jika elemen ditemukan
+            if (stokElement) {
+                stokElement.innerText = stokTersedia - qtyToAdd;
+            }
+
             renderCart();
             saveCartToStorage();
         }
@@ -206,14 +276,24 @@
                     let totalHarga = item.harga * item.qty;
                     totalBayar += totalHarga;
 
+                    // Tambahkan class 'disabled' jika qty = 1
+                    const minusDisabled = item.qty === 1 ? 'disabled' : '';
+
                     cartContainer.innerHTML += `
                 <tr>
                     <td>${item.nama}</td>
                     <td>Rp ${item.harga.toLocaleString('id-ID')}</td>
                     <td>
-                        <button class="btn btn-sm btn-outline-primary" onclick="ubahQtyCart(${index}, ${item.id}, -1)">-</button>
+                        <button class="btn btn-sm btn-outline-primary ${minusDisabled}" 
+                                onclick="ubahQtyCart(${index}, ${item.id}, -1)" 
+                                ${minusDisabled}>
+                            -
+                        </button>
                         <span class="mx-2">${item.qty}</span>
-                        <button class="btn btn-sm btn-outline-primary" onclick="ubahQtyCart(${index}, ${item.id}, 1)">+</button>
+                        <button class="btn btn-sm btn-outline-primary" 
+                                onclick="ubahQtyCart(${index}, ${item.id}, 1)">
+                            +
+                        </button>
                     </td>
                     <td>Rp ${totalHarga.toLocaleString('id-ID')}</td>
                     <td><button class="btn btn-danger btn-sm" onclick="hapusDariCart(${index}, ${item.id}, ${item.qty})">Hapus</button></td>
@@ -228,20 +308,19 @@
 
 
         function hapusDariCart(index, id, qty) {
-            cart.splice(index, 1);
-
             let stokElement = document.getElementById(`stok-${id}`);
             if (stokElement) {
-                stokElement.innerText = parseInt(stokElement.innerText) + qty;
+                let currentStok = parseInt(stokElement.innerText);
+                stokElement.innerText = currentStok + qty;
             }
 
+            cart.splice(index, 1);
             renderCart();
             saveCartToStorage();
 
-            // Cek apakah keranjang kosong
             if (cart.length === 0) {
                 document.getElementById('totalBayar').innerText = 'Rp 0';
-                document.querySelector('button[type="submit"]').disabled = true; // Disable tombol simpan
+                document.getElementById('submit-btn').disabled = true;
             }
         }
 
@@ -277,37 +356,6 @@
             localStorage.removeItem("cart");
         }
 
-        function ubahQtyCart(index, id, perubahan) {
-            let stokElement = document.getElementById(`stok-${id}`);
-            let stokTersedia = parseInt(stokElement.innerText);
-
-            if (cart[index]) {
-                let newQty = cart[index].qty + perubahan;
-
-                // Jika jumlah menjadi 0, hapus barang
-                if (newQty < 1) {
-                    hapusDariCart(index, id, cart[index].qty);
-                    return;
-                }
-
-                // Periksa stok sebelum menambah qty
-                if (perubahan > 0 && stokTersedia <= 0) {
-                    alert("Stok habis!");
-                    return;
-                }
-
-                // Update stok
-                stokElement.innerText = stokTersedia - perubahan;
-
-                // Update qty di keranjang
-                cart[index].qty = newQty;
-
-                // Render ulang tampilan keranjang
-                renderCart();
-                saveCartToStorage();
-            }
-        }
-
         function hapusItemCart(index, id) {
             let stokElement = document.getElementById(`stok-${id}`);
             let stokTersedia = parseInt(stokElement.innerText);
@@ -322,28 +370,45 @@
             renderCart();
         }
 
-
-        function ubahQty(id, jumlah) {
-            let input = document.getElementById(`qty-${id}`);
-            if (!input) {
-                console.error(`Input qty-${id} tidak ditemukan`);
+        function ubahQtyCart(index, id, perubahan) {
+            let stokElement = document.getElementById(`stok-${id}`);
+            if (!stokElement) {
+                console.error(`Element stok-${id} tidak ditemukan`);
                 return;
             }
 
-            let stok = parseInt(input.max);
-            let qty = parseInt(input.value) + jumlah;
+            let stokTersedia = parseInt(stokElement.innerText);
+            let item = cart[index];
 
-            console.log(`ID: ${id}, Stok: ${stok}, Qty: ${qty}`); // Debugging
+            if (!item) return;
 
-            if (isNaN(stok)) {
-                console.error("Stok tidak valid!");
+            // Jika mencoba mengurangi dan qty sudah 1, tidak perlu melakukan apa-apa
+            if (perubahan < 0 && item.qty === 1) {
                 return;
             }
 
-            if (qty < 1) qty = 1;
-            if (qty > stok) qty = stok;
+            let newQty = item.qty + perubahan;
 
-            input.value = qty;
+            // Jika jumlah menjadi 0, hapus barang
+            if (newQty < 1) {
+                hapusDariCart(index, id, item.qty);
+                return;
+            }
+
+            // Validasi stok untuk penambahan
+            if (perubahan > 0 && stokTersedia < perubahan) {
+                alert("Stok tidak mencukupi!");
+                return;
+            }
+
+            // Update stok di tampilan
+            stokElement.innerText = stokTersedia - perubahan;
+
+            // Update qty di keranjang
+            item.qty = newQty;
+
+            renderCart();
+            saveCartToStorage();
         }
 
         function cekQty(id) {

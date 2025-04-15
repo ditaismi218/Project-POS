@@ -9,33 +9,40 @@ use Illuminate\Support\Facades\Log;
 
 class MemberController extends Controller
 {
+    // Menampilkan daftar semua member
     public function index()
     {
         Log::info('Menampilkan semua data member.');
-        
+
         // Simpan log ke database
         ActivityLog::create([
             'action' => 'Akses Data Member',
             'description' => 'User mengakses daftar member.',
-            'data' => ['total_member' => Member::count()]
+            'data' => ['total_member' => Member::count()]  // Menyimpan jumlah total member
         ]);
 
-        $member = Member::all();
+        // Mengambil semua data member dan menampilkan di view
+        $member = Member::orderBy('id', 'desc')->get();
         return view('member.index', compact('member'));
     }
 
+    // Menyimpan member baru
     public function store(Request $request)
     {
         Log::info('Menerima permintaan untuk menambahkan member baru.', ['data' => $request->all()]);
 
+        // Validasi data inputan member
         $request->validate([
             'nama' => 'required',
             'no_telp' => 'required|numeric|digits_between:10,12',
             'alamat' => 'required',
-            'loyalty_points' => 'nullable|integer',
+            'tgl_bergabung' => 'required|date',
+
         ]);
 
-        $member = Member::create($request->only(['nama', 'no_telp', 'alamat', 'loyalty_points']));
+        // Membuat data member baru berdasarkan input
+        $member = Member::create($request->only(['nama', 'no_telp', 'alamat', 'tgl_bergabung']));
+
 
         Log::info('Member baru berhasil ditambahkan.', ['nama' => $request->nama]);
 
@@ -46,26 +53,31 @@ class MemberController extends Controller
             'data' => ['id' => $member->id, 'nama' => $request->nama]
         ]);
 
+        // Redirect ke halaman daftar member dengan pesan sukses
         return redirect()->route('member.index')->with('success', 'Member berhasil ditambahkan');
     }
 
+    // Memperbarui data member yang sudah ada
     public function update(Request $request, $id)
     {
         Log::info('Menerima permintaan untuk memperbarui member.', ['id' => $id, 'data' => $request->all()]);
 
+        // Validasi data inputan member
         $request->validate([
             'nama' => 'required',
             'no_telp' => 'required|numeric|digits_between:10,12',
             'alamat' => 'required',
-            'loyalty_points' => 'nullable|integer',
+            'tgl_bergabung' => 'required|date',
+
         ]);
 
+        // Mencari member berdasarkan ID dan memperbarui datanya
         $member = Member::findOrFail($id);
         $member->update([
             'nama' => $request->nama,
             'no_telp' => $request->no_telp,
             'alamat' => $request->alamat,
-            'loyalty_points' => $request->loyalty_points ?? 0,
+            'tgl_bergabung' => $request->tgl_bergabung,
         ]);
 
         Log::info('Member berhasil diperbarui.', ['id' => $id, 'nama' => $request->nama]);
@@ -77,13 +89,16 @@ class MemberController extends Controller
             'data' => ['id' => $id, 'nama' => $request->nama]
         ]);
 
+        // Redirect ke halaman daftar member dengan pesan sukses
         return redirect()->route('member.index')->with('success', 'Member berhasil diperbarui');
     }
 
+    // Menghapus member berdasarkan ID
     public function destroy($id)
     {
         Log::info('Menerima permintaan untuk menghapus member.', ['id' => $id]);
 
+        // Mencari member berdasarkan ID dan menghapusnya
         $member = Member::findOrFail($id);
         $member->delete();
 
@@ -96,6 +111,7 @@ class MemberController extends Controller
             'data' => ['id' => $id, 'nama' => $member->nama]
         ]);
 
+        // Redirect ke halaman daftar member dengan pesan sukses
         return redirect()->route('member.index')->with('success', 'Member berhasil dihapus.');
     }
 }

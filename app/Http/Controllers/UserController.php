@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log; // Import Log facade
 
 class UserController extends Controller
 {
+    /**
+     * Menampilkan daftar seluruh user.
+     */
     public function index()
     {
         $users = User::all();
@@ -24,6 +27,9 @@ class UserController extends Controller
         return view('users.index', compact('users'));
     }
 
+    /**
+     * Menampilkan form untuk menambahkan user baru.
+     */
     public function create()
     {
         Log::info('Menampilkan form pembuatan user baru');
@@ -36,8 +42,12 @@ class UserController extends Controller
         return view('users.create');
     }
 
+    /**
+     * Menyimpan data user baru ke database.
+     */
     public function store(Request $request)
     {
+        // Validasi input
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users',
@@ -51,6 +61,7 @@ class UserController extends Controller
             'role' => $validated['role']
         ]);
 
+        // Simpan user ke database dengan password terenkripsi
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
@@ -70,23 +81,16 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan');
     }
 
-    public function edit(User $user)
-    {
-        Log::info('Menampilkan form untuk mengedit user', ['user_id' => $user->id, 'name' => $user->name]);
-        ActivityLog::create([
-            'action' => 'view_edit_form',
-            'description' => 'Melihat form edit user',
-            'data' => json_encode(['admin_id' => auth()->id(), 'user_id' => $user->id])
-        ]);
-
-        return view('users.edit', compact('user'));
-    }
-
+    /**
+     * Memperbarui data user.
+     */
     public function update(Request $request, $id)
     {
+        // Ambil data user sebelum diperbarui
         $user = User::findOrFail($id);
         $oldData = $user->toArray();
 
+        // Validasi input
         $request->validate([
             'name' => 'required',
             'email' => 'required',
@@ -108,7 +112,7 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->role = $request->role;
 
-        // Hanya update password jika diisi
+        // Jika password diisi, update juga
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
             Log::info('Password user telah diperbarui', ['user_id' => $user->id]);
@@ -131,6 +135,9 @@ class UserController extends Controller
         return redirect()->route('users.index')->with('success', 'User berhasil diperbarui');
     }
 
+    /**
+     * Menghapus user dari database.
+     */
     public function destroy(User $user)
     {
         // Log penghapusan user
@@ -140,6 +147,8 @@ class UserController extends Controller
             'description' => 'Menghapus user',
             'data' => json_encode(['admin_id' => auth()->id(), 'user_id' => $user->id, 'name' => $user->name])
         ]);
+
+        // Hapus user
         $user->delete();
 
         Log::info('User berhasil dihapus', ['user_id' => $user->id, 'name' => $user->name]);

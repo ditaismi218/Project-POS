@@ -21,7 +21,7 @@
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Supplier</th>
+                            {{-- <th>Supplier</th> --}}
                             <th>Produk</th>
                             <th>Qty</th>
                             <th>Harga Total</th>
@@ -32,8 +32,8 @@
                         @foreach ($penerimaan as $index => $item)
                             <tr>
                                 <td>{{ $index + 1 }}</td>
-                                <td>{{ $item->supplier->nama_supplier }}</td>
-                                <td>{{ $item->produk->nama_barang }}</td>
+                                {{-- <td>{{ $item->supplier->nama_supplier }}</td> --}}
+                                <td>{{ $item->produk->nama_barang ?? '' }}</td>
                                 <td>{{ $item->total_qty }}</td>
                                 <td>Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
                                 <td>
@@ -45,6 +45,7 @@
                             </tr>
                         @endforeach
                     </tbody>
+
                 </table>
             </div>
         </div>

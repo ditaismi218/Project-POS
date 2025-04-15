@@ -36,13 +36,12 @@
         $('.table').DataTable();
     });
 
-    function test(id, kode_member, nama, no_telp, alamat, loyalty_points, tgl_bergabung) {
+    function test(id, kode_member, nama, no_telp, alamat, tgl_bergabung) {
     document.getElementById('id').value = id;
     document.getElementById('kode_member-edit').value = kode_member; // Tetap bisa diisi tetapi tidak bisa diedit
     document.getElementById('nama-edit').value = nama;
     document.getElementById('no_telp-edit').value = no_telp;
     document.getElementById('alamat-edit').value = alamat;
-    document.getElementById('loyalty_points-edit').value = loyalty_points;
     document.getElementById('tgl_bergabung-edit').value = tgl_bergabung;
 
     // Atur form agar mengirim ke /member/{id} dengan metode PUT

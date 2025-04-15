@@ -1,0 +1,33 @@
+[
+    {
+      "nama_supplier": "PT Indofood Sukses Makmur Tbk",
+      "telepon": "021-57958888",
+      "email": "contact@indofood.com",
+      "alamat": "Jl. Jend. Sudirman Kav. 76-78, Jakarta Selatan"
+    },
+    {
+      "nama_supplier": "PT Mayora Indah Tbk",
+      "telepon": "021-80638888",
+      "email": "info@mayora.co.id",
+      "alamat": "Jl. Daan Mogot KM 18, Kalideres, Jakarta Barat"
+    },
+    {
+      "nama_supplier": "PT Wings Surya",
+      "telepon": "031-5341111",
+      "email": "wingscare@wingscorp.com",
+      "alamat": "Jl. Embong Malang No. 61-65, Surabaya"
+    },
+    {
+      "nama_supplier": "PT Garudafood Putra Putri Jaya Tbk",
+      "telepon": "021-59401155",
+      "email": "info@garudafood.co.id",
+      "alamat": "Jl. Raya Bogor Km. 38, Cibinong, Bogor"
+    },
+    {
+      "nama_supplier": "PT Ultrajaya Milk Industry Tbk",
+      "telepon": "022-6866242",
+      "email": "ultrajaya@ultrajaya.co.id",
+      "alamat": "Jl. Raya Cimareme No. 131, Padalarang, Bandung"
+    }
+  ]
+  

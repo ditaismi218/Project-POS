@@ -1,0 +1,212 @@
+[
+  {
+    "kode_barang": "PRD001\t",
+    "nama_barang": "Bimoli",
+    "kategori": "Minyak",
+    "satuan": "liter",
+    "gambar": "bimoli.png"
+  },
+  {
+    "kode_barang": "PRD002",
+    "nama_barang": "Sania",
+    "kategori": "Minyak",
+    "satuan": "liter",
+    "gambar": "sania.png"
+  },
+  {
+    "kode_barang": "PRD003",
+    "nama_barang": "Tropical",
+    "kategori": "Minyak",
+    "satuan": "liter",
+    "gambar": "tropical.png"
+  },
+  {
+    "kode_barang": "PRD004",
+    "nama_barang": "Gulaku",
+    "kategori": "Gula",
+    "satuan": "kg",
+    "gambar": "gulaku.png"
+  },
+  {
+    "kode_barang": "PRD005",
+    "nama_barang": "Gula Rose Brand",
+    "kategori": "Gula",
+    "satuan": "kg",
+    "gambar": "rose.png"
+  },
+  {
+    "kode_barang": "PRD006",
+    "nama_barang": "Gula Gunung Masu",
+    "kategori": "Gula",
+    "satuan": "kg",
+    "gambar": "GM.png"
+  },
+  {
+    "kode_barang": "PRD007",
+    "nama_barang": "Mie Aceh",
+    "kategori": "Mie",
+    "satuan": "pcs",
+    "gambar": "mie1.png"
+  },
+  {
+    "kode_barang": "PRD008",
+    "nama_barang": "Mie Soto",
+    "kategori": "Mie",
+    "satuan": "pcs",
+    "gambar": "mie2.png"
+  },
+  {
+    "kode_barang": "PRD009",
+    "nama_barang": "Mie Rendang",
+    "kategori": "Mie",
+    "satuan": "pcs",
+    "gambar": "mie3.png"
+  },
+  {
+    "kode_barang": "PRD010",
+    "nama_barang": "Shinzui",
+    "kategori": "Sabun Mandi",
+    "satuan": "botol",
+    "gambar": "shinzui.png"
+  },
+  {
+    "kode_barang": "PRD011",
+    "nama_barang": "Nuvo",
+    "kategori": "Sabun Mandi",
+    "satuan": "botol",
+    "gambar": "nuvo.png"
+  },
+  {
+    "kode_barang": "PRD012",
+    "nama_barang": "Lifebuoy",
+    "kategori": "Sabun Mandi",
+    "satuan": "botol",
+    "gambar": "sabun.png"
+  },
+  {
+    "kode_barang": "PRD013",
+    "nama_barang": "Rinso",
+    "kategori": "Detergen",
+    "satuan": "pack",
+    "gambar": "detergen1.png"
+  },
+  {
+    "kode_barang": "PRD014",
+    "nama_barang": "So Klin",
+    "kategori": "Detergen",
+    "satuan": "botol",
+    "gambar": "detergen2.png"
+  },
+  {
+    "kode_barang": "PRD015",
+    "nama_barang": "Molto",
+    "kategori": "Detergen",
+    "satuan": "pcs",
+    "gambar": "detergen3.png"
+  },
+  {
+    "kode_barang": "PRD016",
+    "nama_barang": "Chitato",
+    "kategori": "Snack",
+    "satuan": "pcs",
+    "gambar": "chitato.jpg"
+  },
+  {
+    "kode_barang": "PRD017",
+    "nama_barang": "Lays",
+    "kategori": "Snack",
+    "satuan": "pcs",
+    "gambar": "lays.png"
+  },
+  {
+    "kode_barang": "PRD018",
+    "nama_barang": "Kusuka",
+    "kategori": "Snack",
+    "satuan": "pcs",
+    "gambar": "kusuka.png"
+  },
+  {
+    "kode_barang": "PRD019",
+    "nama_barang": "Indomilk",
+    "kategori": "Minuman Susu",
+    "satuan": "pcs",
+    "gambar": "susu1.png"
+  },
+  {
+    "kode_barang": "PRD020",
+    "nama_barang": "Ultra Milk",
+    "kategori": "Minuman Susu",
+    "satuan": "pcs",
+    "gambar": "susu2.png"
+  },
+  {
+    "kode_barang": "PRD021",
+    "nama_barang": "Milo",
+    "kategori": "Minuman Susu",
+    "satuan": "pcs",
+    "gambar": "susu3.png"
+  },
+  {
+    "kode_barang": "PRD022",
+    "nama_barang": "Nescafe",
+    "kategori": "Minuman Kopi",
+    "satuan": "pcs",
+    "gambar": "kopi1.png"
+  },
+  {
+    "kode_barang": "PRD023",
+    "nama_barang": "Good Day",
+    "kategori": "Minuman Kopi",
+    "satuan": "pcs",
+    "gambar": "kopi2.png"
+  },
+  {
+    "kode_barang": "PRD024",
+    "nama_barang": "Indocafe",
+    "kategori": "Minuman Kopi",
+    "satuan": "pcs",
+    "gambar": "kopi3.png"
+  },
+  {
+    "kode_barang": "PRD025",
+    "nama_barang": "Nabati",
+    "kategori": "Snack Manis",
+    "satuan": "pcs",
+    "gambar": "nabati.png"
+  },
+  {
+    "kode_barang": "PRD026",
+    "nama_barang": "Roma Kelapa",
+    "kategori": "Snack Manis",
+    "satuan": "pcs",
+    "gambar": "roma.png"
+  },
+  {
+    "kode_barang": "PRD027",
+    "nama_barang": "Beng Beng",
+    "kategori": "Snack Manis",
+    "satuan": "pcs",
+    "gambar": "beng2.png"
+  },
+  {
+    "kode_barang": "PRD028",
+    "nama_barang": "Aqua",
+    "kategori": "Air Mineral",
+    "satuan": "botol",
+    "gambar": "minum1.png"
+  },
+  {
+    "kode_barang": "PRD029",
+    "nama_barang": "Nestle",
+    "kategori": "Air Mineral",
+    "satuan": "botol",
+    "gambar": "minum2.png"
+  },
+  {
+    "kode_barang": "PRD030",
+    "nama_barang": "Le mineral",
+    "kategori": "Air Mineral",
+    "satuan": "botol",
+    "gambar": "minum3.png"
+  }
+]

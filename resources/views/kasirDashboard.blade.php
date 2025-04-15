@@ -2,7 +2,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="col-xxl-8 mb-6 order-0">
+    <div class="col-lg-12 order-lg-0 order-1 mb-4">
         <div class="card">
             <div class="d-flex align-items-start row">
                 <div class="col-sm-7">
@@ -35,9 +35,9 @@
         </div>
     </div>
 
-    <div class="col-lg-12 col-xxl-4">
+    <div class="col-lg-12 order-lg-1 order-0 mb-4">
         <div class="row">
-            <div class="col-xxl-6 col-md-4 col-sm-6 col-12 mb-6">
+            <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <div class="col-xxl-6 col-md-4 col-sm-6 col-12 mb-6">
+            <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -95,7 +95,7 @@
                 </div>
             </div>
 
-            <div class="col-xxl-6 col-md-4 col-sm-6 col-12 mb-6">
+            <div class="col">
                 <div class="card h-100">
                     <div class="card-body">
                         <div class="card-title d-flex align-items-start justify-content-between mb-4">
@@ -118,9 +118,8 @@
         </div>
     </div>
 
-    <div class="col-lg-12 col-xxl-4">
+    <div class="col-lg-12 order-lg-1 order-0 mb-4">
         <div class="row">
-
             <div class="col-xl-8 col-12 mb-6">
                 <div class="card h-100">
                     <div class="card-header header-elements">
@@ -251,7 +250,7 @@
     </script>
 
     <script>
-         document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {
             var ctx = document.getElementById("barChart").getContext("2d");
 
             const noDataPlugin = {

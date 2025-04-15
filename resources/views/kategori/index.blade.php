@@ -7,6 +7,10 @@
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">
                 Tambah Kategori Produk
             </button>
+
+            <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#importModal">
+                Import Data
+            </button>
         </div>
 
         @if (session('success'))
@@ -43,17 +47,22 @@
                                             Edit
                                         </button>
 
-                                        <button class="btn btn-danger delete-button" data-id="{{ $item->id }}">
-                                            Hapus
-                                        </button>
-
-                                        <form id="delete-form-{{ $item->id }}"
-                                            action="{{ route('kategori.destroy', $item->id) }}" method="POST"
-                                            style="display:none;">
-                                            @csrf
-                                            @method('DELETE')
-                                        </form>
+                                        @if ($item->produk->count() > 0)
+                                            <button class="btn btn-danger" disabled
+                                                title="Kategori sedang digunakan">Hapus</button>
+                                        @else
+                                            <button class="btn btn-danger delete-button" data-id="{{ $item->id }}">
+                                                Hapus
+                                            </button>
+                                            <form id="delete-form-{{ $item->id }}"
+                                                action="{{ route('kategori.destroy', $item->id) }}" method="POST"
+                                                style="display:none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
+                                        @endif
                                     </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -103,6 +112,28 @@
                                 required>
                         </div>
                         <button type="submit" class="btn btn-success">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Import Data -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importModalLabel">Import Data</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ route('kategori.import') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="file_import" class="form-label">Pilih File untuk Diimpor</label>
+                            <input type="file" class="form-control" name="file" id="file_import" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Import</button>
                     </form>
                 </div>
             </div>

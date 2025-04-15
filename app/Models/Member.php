@@ -19,7 +19,6 @@ class Member extends Model
         'nama',
         'no_telp',
         'alamat',
-        'loyalty_points',
     ];
 
     protected static function boot()

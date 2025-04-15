@@ -18,7 +18,7 @@
                     <input type="date" name="tanggal_mulai" class="form-control w-auto" value="{{ request('tanggal_mulai') }}">
                     <input type="date" name="tanggal_selesai" class="form-control w-auto" value="{{ request('tanggal_selesai') }}">
                     <button type="submit" class="btn btn-primary">Filter</button>
-                    <a href="{{ route('laporan.transaksi') }}" class="btn btn-secondary">Reset</a>
+                    <a href="{{ route('pembayaran.index') }}" class="btn btn-secondary">Reset</a>
                 </form> 
 
                 <!-- Dropdown Export -->
@@ -55,6 +55,7 @@
                             <td>Rp {{ number_format($item->jumlah_bayar, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($item->kembalian, 0, ',', '.') }}</td>
                             <td>{{ ucfirst($item->metode_pembayaran) }}</td>
+                            
                         </tr>
                     @endforeach
                 </tbody>

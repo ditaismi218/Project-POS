@@ -22,6 +22,7 @@
     @endif
 
 
+
     <div class="card shadow-sm p-4">
         <!-- Header Pembayaran -->
         <div class="d-flex justify-content-between align-items-center mb-3 rounded">
@@ -60,16 +61,26 @@
                         $groupedDetails = [];
                         foreach ($penjualan->detailPenjualan as $detail) {
                             $produkId = $detail->produk_id;
+
                             if (!isset($groupedDetails[$produkId])) {
                                 $groupedDetails[$produkId] = [
                                     'nama' => $detail->produk->nama_barang,
                                     'jumlah' => 0,
-                                    'harga_jual' => $detail->harga_jual,
+                                    'total_harga' => 0,
                                 ];
                             }
+
                             $groupedDetails[$produkId]['jumlah'] += $detail->qty;
+                            $groupedDetails[$produkId]['total_harga'] += $detail->qty * $detail->harga_jual;
+                        }
+
+                        // Setelah ini kamu bisa hitung harga rata-rata (jika perlu)
+                        foreach ($groupedDetails as $id => $data) {
+                            $groupedDetails[$id]['harga_jual'] =
+                                $data['jumlah'] > 0 ? $data['total_harga'] / $data['jumlah'] : 0;
                         }
                     @endphp
+
 
                     @foreach ($groupedDetails as $detail)
                         @php

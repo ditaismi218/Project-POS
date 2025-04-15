@@ -54,6 +54,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('kategori', [kategoriController::class, 'store'])->name('kategori.store');
     Route::put('kategori/{id}', [kategoriController::class, 'update'])->name('kategori.update');
     Route::delete('kategori/{id}', [kategoriController::class, 'destroy'])->name('kategori.destroy');
+    Route::post('/kategori/import', [KategoriController::class, 'import'])->name('kategori.import');
 
     Route::get('/produk', [ProdukController::class, 'index'])->name('produk.index');
     Route::post('/produk', [ProdukController::class, 'store'])->name('produk.store');
@@ -74,14 +75,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/penerimaan_barang/create', [PenerimaanBarangController::class, 'create'])->name('penerimaan_barang.create');
     Route::post('/penerimaan_barang', [PenerimaanBarangController::class, 'store'])->name('penerimaan_barang.store');
     Route::get('/penerimaan_barang/{id}', [PenerimaanBarangController::class, 'show'])->name('penerimaan_barang.show');
-    Route::post('/penerimaan_barang/edit', [PenerimaanBarangController::class, 'update'])->name('penerimaan_barang.update');
+    // Route::post('/penerimaan_barang/edit', [PenerimaanBarangController::class, 'update'])->name('penerimaan_barang.update');
     Route::delete('/penerimaan_barang/{id}', [PenerimaanBarangController::class, 'destroy'])->name('penerimaan_barang.destroy');
-
+    Route::put('/penerimaan-barang/{id}', [PenerimaanBarangController::class, 'update'])->name('penerimaan_barang.update');
 
     Route::get('/laporan/penjualan', [LaporanPenjualanController::class, 'laporanPenjualan'])->name('laporan.penjualan');
     Route::get('/laporan/penerimaan_barang', [LaporanPenerimaanBarangController::class, 'index'])->name('laporan.penerimaan_barang');
     // Route::get('/laporan/transaksi', [LaporanTransaksiController::class, 'index'])->name('laporan.transaksi');
     // Route::get('/laporan/transaksi/{id}', [LaporanTransaksiController::class, 'show'])->name('transaksi.detail');
+    Route::get('/laporan/transaksi/print-struk/{id}', [LaporanTransaksiController::class, 'printStruk'])->name('struk.print');
+
 
     Route::get('/pengajuan_barang', [PengajuanBarangController::class, 'index'])->name('pengajuan_barang.index');
     Route::post('/pengajuan_barang/store', [PengajuanBarangController::class, 'store'])->name('pengajuan_barang.store');
@@ -102,6 +105,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
     Route::get('/laporan/transaksi', [LaporanTransaksiController::class, 'index'])->name('laporan.transaksi');
     Route::get('/laporan/transaksi/{id}', [LaporanTransaksiController::class, 'show'])->name('transaksi.detail');
+    Route::get('/laporan/transaksi/print-struk/{id}', [LaporanTransaksiController::class, 'printStruk'])->name('struk.print');
+
 });
 
 
@@ -118,12 +123,13 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.show');
     Route::get('/invoice/{id}', [PenjualanController::class, 'invoice'])->name('invoice.show');
 
+    
 
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/create/{penjualan}', [PembayaranController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran/store', [PembayaranController::class, 'store'])->name('pembayaran.store');
 
-    Route::get('/invoice/cetak/{id}', [InvoiceController::class, 'cetak'])->name('invoice.cetak');
+    // Route::get('/invoice/cetak/{id}', [InvoiceController::class, 'cetak'])->name('invoice.cetak');
 });
 
 

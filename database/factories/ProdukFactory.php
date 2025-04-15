@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\KategoriProduk;
 use DB;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -22,6 +23,10 @@ class ProdukFactory extends Factory
             ->inRandomOrder()
             ->select('id')
             ->first();
+
+        if (!$data) {
+            $data = KategoriProduk::factory()->create(); // make sure factory ini ada
+        }
 
         $satuanList = ['pcs', 'pack', 'box', 'lusin', 'gram', 'kg', 'ml', 'liter', 'meter', 'botol', 'kaleng', 'sachet', 'strip'];
 
@@ -44,6 +49,12 @@ class ProdukFactory extends Factory
                 'Pasta Gigi'
             ]),
             'kategori_id' => $data->id,
+            // 'gambar' => 'produk/' . fake()->image('storage/app/public/produk', 640, 480, null, false),
+            'gambar' => fake()->randomElement([
+                'produk/chitato.jpg',
+                'produk/lays.png',
+            ]),
+
             'satuan' => fake()->randomElement($satuanList),
         ];
 

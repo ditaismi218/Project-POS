@@ -16,8 +16,11 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class PengajuanBarangController extends Controller
 {
-    /**
-     * Menampilkan halaman daftar pengajuan barang.
+   /**
+     * Menampilkan halaman utama pengajuan barang.
+     * Fitur:
+     * - Filter berdasarkan tanggal
+     * - Export data ke PDF dan Excel
      */
     public function index(Request $request)
     {
@@ -29,6 +32,7 @@ class PengajuanBarangController extends Controller
         $namaPengajuEnum = Member::pluck('nama');
         $query = PengajuanBarang::query();
 
+         // Filter berdasarkan tanggal pengajuan
         if ($request->filled('tanggal_mulai') && $request->filled('tanggal_selesai')) {
             try {
                 $tanggalMulai = Carbon::parse($request->tanggal_mulai)->startOfDay();
@@ -46,7 +50,7 @@ class PengajuanBarangController extends Controller
 
         $pengajuanBarang = $query->get();
 
-        // Export PDF
+        // Export ke PDF
         if ($request->has('export_pdf')) {
             $pdf = Pdf::loadView('pengajuan_barang.pdf', [
                 'pengajuans' => $pengajuanBarang,
@@ -55,7 +59,7 @@ class PengajuanBarangController extends Controller
             return $pdf->download('pengajuan_barang.pdf');
         }
 
-        // Export Excel 
+        // Export ke Excel 
         if ($request->has('export_excel')) {
             return Excel::download(new PengajuanBarangExport($pengajuanBarang), 'pengajuan_barang.xlsx');
         }
@@ -132,6 +136,10 @@ class PengajuanBarangController extends Controller
         return redirect()->route('pengajuan_barang.index')
             ->with('success', 'Pengajuan barang berhasil ditambahkan!');
     }
+
+     /**
+     * Memperbarui data pengajuan barang berdasarkan ID.
+     */
     public function update(Request $request, $id)
     {
         Log::info('Menerima permintaan untuk memperbarui pengajuan barang', [
@@ -141,22 +149,27 @@ class PengajuanBarangController extends Controller
             'qty' => $request->qty
         ]);
     
+        // Validasi data input untuk memastikan data yang dimasukkan sesuai aturan
         $request->validate([
             'nama_pengaju' => 'required|string|max:255',
             'nama_barang' => 'required|string|max:255',
             'qty' => 'required|integer|min:1',
         ]);
     
+        // Cari data pengajuan barang berdasarkan ID, jika tidak ditemukan akan menampilkan error
         $pengajuanBarang = PengajuanBarang::findOrFail($id);
     
+        // Simpan data lama sebelum diperbarui untuk kebutuhan log perubahan
         $oldData = $pengajuanBarang->toArray();
     
+        // Perbarui data pengajuan barang dengan data baru dari input
         $pengajuanBarang->update([
             'nama_pengaju' => $request->nama_pengaju,
             'nama_barang' => $request->nama_barang,
             'qty' => $request->qty,
         ]);
     
+         // Simpan log aktivitas perubahan
         ActivityLog::create([
             'action' => 'update',
             'description' => 'Pengajuan barang diperbarui',
@@ -172,6 +185,10 @@ class PengajuanBarangController extends Controller
     
         return redirect()->route('pengajuan_barang.index')->with('success', 'Pengajuan barang berhasil diperbarui!');
     }    
+
+      /**
+     * Menghapus data pengajuan barang berdasarkan ID.
+     */
     public function destroy($id)
     {
         Log::info('Menerima permintaan untuk menghapus pengajuan barang', ['id' => $id]);
@@ -190,6 +207,10 @@ class PengajuanBarangController extends Controller
         return redirect()->route('pengajuan_barang.index')->with('success', 'Pengajuan barang berhasil dihapus!');
     }
 
+    /**
+     * Memperbarui status "terpenuhi" dari pengajuan barang.
+     * Endpoint ini umumnya dipanggil via AJAX.
+     */
     public function updateTerpenuhi(Request $request, $id)
     {
         $pengajuan = PengajuanBarang::findOrFail($id);

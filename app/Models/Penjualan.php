@@ -12,12 +12,22 @@ class Penjualan extends Model
     protected $table = 'penjualan';
     protected $fillable = [
         'no_faktur',
-        'tgl_faktur',   
+        'tgl_faktur',
         'user_id',
         'member_id',
         'total_bayar',
         'status',
     ];
+
+    protected static function booted()
+    {
+        static::creating(function ($penjualan) {
+            if (empty($penjualan->no_faktur)) {
+                $penjualan->no_faktur = self::generateNoFaktur();
+            }
+        });
+    }
+
 
     public static function generateNoFaktur()
     {
@@ -34,14 +44,14 @@ class Penjualan extends Model
         return 'INV-' . $date . '-' . $newNumber;
     }
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($penjualan) {
-            $penjualan->no_faktur = self::generateNoFaktur();
-        });
-    }
+    //     static::creating(function ($penjualan) {
+    //         $penjualan->no_faktur = self::generateNoFaktur();
+    //     });
+    // }
 
     public function user()
     {
@@ -62,5 +72,5 @@ class Penjualan extends Model
     {
         return $this->hasOne(Pembayaran::class);
     }
-    
+
 }

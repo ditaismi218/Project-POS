@@ -24,7 +24,7 @@ class SupplierSeeder extends Seeder
             Supplier::create([
                 // 'id' => $item->id,
                 'nama_supplier' => $item->nama_supplier,
-                'telpon' => $item->telpon,
+                'telepon' => $item->telepon,
                 'email' => $item->email,
                 'alamat' => $item->alamat,
             ]);
