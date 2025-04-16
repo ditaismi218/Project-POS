@@ -60,6 +60,8 @@ class PenjualanController extends Controller
             'cart.*.qty' => 'required|integer|min:1',
         ]);
 
+        // dd($validated); 
+
         Log::info('Menerima permintaan penyimpanan penjualan', $validated);
 
         DB::beginTransaction();

@@ -287,6 +287,14 @@
                                 <div>Pengguna</div>
                             </a>
                         </li>
+
+                        {{-- absen --}}
+                        <li class="menu-item {{ Request::routeIs('absensi.index') ? 'active' : '' }}">
+                            <a href="{{ route('absensi.index') }}" class="menu-link">
+                                <i class="menu-icon bx bx-user-circle"></i>
+                                <div>Absensi Kerja</div>
+                            </a>
+                        </li>
                     @endif
             </aside>
 

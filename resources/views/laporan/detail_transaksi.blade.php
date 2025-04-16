@@ -10,7 +10,7 @@
                         <i class="bx bxs-store me-2" style="font-size: 32px;"></i>
                         <h5 class="fw-bold mb-1" style="font-size: 28px;">GoMart</h5>
                     </div>
-                    <p class="mb-5">📞 0812-3456-7890 | 📍 Jl. Contoh No. 123, Kota</p>
+                    <p class="mb-5">📞 0812-3456-7890 | 📍 Jl. Gunteng No. 123, Kota</p>
                     <hr class="border border-dark mb-10">
                 </div>
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -100,6 +101,19 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/member/{id}', [MemberController::class, 'destroy'])->name('member.destroy');
 
     Route::get('/logs', [ActivityLogController::class, 'index'])->name('logs.index');
+
+    // Halaman utama absensi (index)
+    Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi.index');
+    Route::post('/absensi', [AbsensiController::class, 'store'])->name('absensi.store');
+    Route::delete('/absensi/{id}', [AbsensiController::class, 'destroy'])->name('absensi.destroy');
+    Route::post('/absensi/update-status', [AbsensiController::class, 'updateStatus'])->name('absensi.updateStatus');
+    Route::post('/absensi/selesaikan', [AbsensiController::class, 'selesaikan'])->name('absensi.selesaikan');
+    Route::put('/absensi/{id}', [AbsensiController::class, 'update'])->name('absensi.update');
+    Route::get('/absensi/export-pdf', [AbsensiController::class, 'exportPdf'])->name('absensi.exportPdf');
+    Route::post('/absensi/import', [AbsensiController::class, 'import'])->name('absensi.import');
+    Route::get('/absensi/export-excel', [AbsensiController::class, 'exportExcel'])->name('absensi.export');
+
+
 });
 
 Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
@@ -123,7 +137,7 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.show');
     Route::get('/invoice/{id}', [PenjualanController::class, 'invoice'])->name('invoice.show');
 
-    
+
 
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/create/{penjualan}', [PembayaranController::class, 'create'])->name('pembayaran.create');
