@@ -190,6 +190,9 @@
                     produk.stok
                 );
 
+                // Update tampilan keranjang setelah produk ditambahkan
+                renderCart();
+
                 barcodeInput.value = '';
                 barcodeInput.focus();
             } else {
@@ -225,7 +228,7 @@
         }
 
         function tambahKeCart(id, nama, harga, stok) {
-            // Cari elemen stok yang benar
+            harga = Math.round(harga);
             let stokElement = document.getElementById(`stok-${id}`);
             let stokTersedia = stokElement ? parseInt(stokElement.innerText) : stok;
 
@@ -256,6 +259,7 @@
                 stokElement.innerText = stokTersedia - qtyToAdd;
             }
 
+            // Render ulang keranjang setelah update
             renderCart();
             saveCartToStorage();
         }
@@ -282,7 +286,7 @@
                     cartContainer.innerHTML += `
                 <tr>
                     <td>${item.nama}</td>
-                    <td>Rp ${item.harga.toLocaleString('id-ID')}</td>
+                    <td>Rp ${Number(item.harga).toLocaleString('id-ID')}</td>
                     <td>
                         <button class="btn btn-sm btn-outline-primary ${minusDisabled}" 
                                 onclick="ubahQtyCart(${index}, ${item.id}, -1)" 
@@ -371,6 +375,9 @@
         }
 
         function ubahQtyCart(index, id, perubahan) {
+            // Cegah agar tombol tidak memicu submit form atau reload
+            event.preventDefault();
+
             let stokElement = document.getElementById(`stok-${id}`);
             if (!stokElement) {
                 console.error(`Element stok-${id} tidak ditemukan`);
@@ -429,6 +436,17 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             loadCartFromStorage();
+            // Pastikan tombol + dan - selalu terpasang event listener
+            const buttons = document.querySelectorAll('.btn-outline-primary');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update keranjang sesuai dengan tombol yang diklik
+                    const itemIndex = this.closest('tr').dataset
+                    .index; // Ambil index dari data-atribut atau lainnya
+                    const isPlus = this.innerText === '+';
+                    ubahQtyCart(itemIndex, isPlus ? 1 : -1);
+                });
+            });
         });
     </script>
 @endsection

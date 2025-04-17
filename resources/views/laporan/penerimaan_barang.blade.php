@@ -1,6 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
+
     <div
         class="card-header d-flex flex-wrap justify-content-between align-items-center  bg-white shadow-sm p-3 rounded mb-5">
         <h5 class="m-0">Laporan Pembelian Barang</h5>

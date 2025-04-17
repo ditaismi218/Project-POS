@@ -54,7 +54,9 @@
                                         style="display:none;">
                                         @csrf
                                         @method('DELETE')
+                                        <input type="hidden" name="id" value="{{ $item->id }}">
                                     </form>
+                                    
                                 </td>
                             </tr>
                         @endforeach
@@ -276,21 +278,20 @@
             // Event untuk Hapus User
             document.querySelectorAll('.delete-button').forEach(button => {
                 button.addEventListener('click', function() {
-                    let id = this.getAttribute('data-id');
-                    let nama = this.getAttribute('data-nama');
+                    const userId = this.getAttribute('data-id');
+                    const userName = this.getAttribute('data-nama');
 
                     Swal.fire({
-                        title: "Apakah Anda yakin?",
-                        text: `User "${nama}" akan dihapus secara permanen!`,
-                        icon: "warning",
+                        title: `Hapus ${userName}?`,
+                        text: "Data akan dihapus secara permanen!",
+                        icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonColor: "#d33",
-                        cancelButtonColor: "#3085d6",
-                        confirmButtonText: "Ya, hapus!",
-                        cancelButtonText: "Batal"
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, hapus!'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            document.getElementById(`delete-form-${id}`).submit();
+                            document.getElementById(`delete-form-${userId}`).submit();
                         }
                     });
                 });

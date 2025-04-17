@@ -14,12 +14,27 @@ class ProdukController extends Controller
     /**
      * Menampilkan daftar produk beserta kategorinya.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua produk beserta relasi kategorinya, urutkan berdasarkan tanggal terbaru
-        $products = Produk::with('kategori')->orderBy('created_at', 'desc')->get();
+        // Ambil kategori yang dipilih dari query string (URL)
+        $kategoriId = $request->get('kategori_id'); // Ambil kategori_id dari query string
+
         // Ambil semua kategori untuk keperluan modal tambah
         $categories = KategoriProduk::all();
+
+        // Jika ada kategori yang dipilih, filter produk berdasarkan kategori
+        if ($kategoriId) {
+            // Ambil produk yang sesuai dengan kategori yang dipilih
+            $products = Produk::with('kategori')
+                ->where('kategori_id', $kategoriId) // Filter berdasarkan kategori_id
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            // Ambil semua produk jika tidak ada filter kategori
+            $products = Produk::with('kategori')
+                ->orderBy('created_at', 'desc')
+                ->get();
+        }
 
         Log::info('Menampilkan produk dan kategori', ['total_produk' => $products->count(), 'total_kategori' => $categories->count()]);
 
@@ -37,6 +52,7 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
+
         // Validasi input dari form
         $validated = $request->validate([
             // 'kode_barang' => 'required|string|unique:produk,kode_barang',
@@ -57,7 +73,7 @@ class ProdukController extends Controller
 
         // Tambahkan barcode otomatis dari kode_barang
         $validated['barcode'] = $validated['kode_barang'];
-        
+
         // Simpan data produk ke database
         $produk = Produk::create($validated);
 

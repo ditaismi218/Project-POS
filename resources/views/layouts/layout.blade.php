@@ -210,7 +210,7 @@
                         </a>
                     </li>     --}}
 
-                    @if (Auth::user()->role == 'kasir')
+                    @if (Auth::user()->role == 'kasir' || Auth::user()->role == 'admin')
                         <!-- Manajemen Penjualan -->
                         <li
                             class="menu-item {{ Request::routeIs('penjualan.index') || Request::routeIs('penjualan.create') ? 'active open' : '' }}">
@@ -244,7 +244,7 @@
                         <li class="menu-item {{ Request::routeIs('laporan.transaksi') ? 'active' : '' }}">
                             <a href="{{ route('laporan.transaksi') }}" class="menu-link">
                                 <i class="menu-icon bx bx-receipt"></i>
-                                <div>Transaksi Penjualan</div>
+                                <div>Laporan Transaksi </div>
                             </a>
                         </li>
                     @endif

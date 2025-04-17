@@ -8,6 +8,20 @@
             <button class="btn btn-primary" id="createProductButton">
                 <i class="fa fa-plus"></i> Tambah Produk
             </button>
+
+            <form method="GET" action="{{ route('produk.index') }}" class="d-flex gap-2">
+                <select name="kategori_id" class="form-control form-control-sm w-auto">
+                    <option value="">-- Semua Kategori --</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('kategori_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->nama_kategori }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-primary ">Filter</button>
+                <a href="{{ route('produk.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+            </form>
+
         </div>
 
         @if (session('success'))
@@ -22,8 +36,8 @@
                         <tr>
                             <th>No</th>
                             <th>Kode</th>
-                            <th>Nama Barang</th>
                             <th>Barcode</th>
+                            <th>Nama Barang</th>
                             <th>Kategori</th>
                             <th>Gambar</th>
                             <th>Satuan</th>

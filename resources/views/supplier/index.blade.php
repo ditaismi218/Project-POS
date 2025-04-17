@@ -8,6 +8,12 @@
             <button class="btn btn-primary" id="createProductButton">
                 <i class="fa fa-plus"></i> Tambah Supplier
             </button>
+
+            <!-- Tombol untuk membuka modal -->
+            <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#importModal">
+                Import
+            </button>
+
         </div>
 
         @if (session('success'))
@@ -77,7 +83,6 @@
         </div>
     </div>
 
-
     {{-- modal --}}
     <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -115,6 +120,31 @@
                         <button type="submit" class="btn btn-success" id="submitButton">Simpan</button>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Import Excel -->
+    <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('supplier.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importModalLabel">Import Excel Supplier</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="file" class="form-label">Pilih file Excel (.xlsx, .xls, .csv)</label>
+                            <input type="file" name="file" class="form-control" accept=".xlsx,.xls,.csv" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Import</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

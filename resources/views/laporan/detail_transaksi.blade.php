@@ -26,7 +26,7 @@
                     </tr>
                     <tr>
                         <td><strong>Jam</strong></td>
-                        <td class="text-end">{{ date('H:i:s', strtotime($transaksi->created_at)) }}</td>
+                        <td class="text-end">{{ \Carbon\Carbon::parse($transaksi->created_at)->timezone('Asia/Jakarta')->format('H:i:s') }}</td>
                     </tr>
                     <tr>
                         <td><strong>Pelanggan</strong></td>

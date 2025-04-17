@@ -140,7 +140,7 @@ class LaporanTransaksiController extends Controller
             // Informasi Transaksi
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text("No Faktur : " . $transaksi->no_faktur . "\n");
-            $printer->text("Tanggal   : " . $transaksi->created_at->format('d-m-Y H:i:s') . "\n");
+            $printer->text("Tanggal   : " . $transaksi->created_at->timezone('Asia/Jakarta')->format('d-m-Y H:i:s') . "\n");
             $printer->text("Pelanggan : " . ($transaksi->member->nama ?? 'Umum') . "\n");
             $printer->text("Kasir     : " . $transaksi->user->name . "\n");
             $printer->feed();

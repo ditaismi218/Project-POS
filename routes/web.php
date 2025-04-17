@@ -18,7 +18,6 @@ use App\Http\Controllers\PengajuanBarangController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProdukController;
 
@@ -66,11 +65,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/supplier', [SupplierController::class, 'store'])->name('supplier.store');
     Route::put('/supplier/{id}', [SupplierController::class, 'update'])->name('supplier.update');
     Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
+    Route::post('/supplier/import', [SupplierController::class, 'import'])->name('supplier.import');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{id}', [UserController::class, 'update'])->name('users.update');
-    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
     Route::get('/penerimaan_barang', [PenerimaanBarangController::class, 'index'])->name('penerimaan_barang.index');
     Route::get('/penerimaan_barang/create', [PenerimaanBarangController::class, 'create'])->name('penerimaan_barang.create');
@@ -81,6 +81,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/penerimaan-barang/{id}', [PenerimaanBarangController::class, 'update'])->name('penerimaan_barang.update');
 
     Route::get('/laporan/penjualan', [LaporanPenjualanController::class, 'laporanPenjualan'])->name('laporan.penjualan');
+    Route::get('/laporan-penjualan/export', [LaporanPenjualanController::class, 'export'])->name('laporan.penjualan.export');
     Route::get('/laporan/penerimaan_barang', [LaporanPenerimaanBarangController::class, 'index'])->name('laporan.penerimaan_barang');
     // Route::get('/laporan/transaksi', [LaporanTransaksiController::class, 'index'])->name('laporan.transaksi');
     // Route::get('/laporan/transaksi/{id}', [LaporanTransaksiController::class, 'show'])->name('transaksi.detail');
@@ -99,6 +100,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/member', [MemberController::class, 'store'])->name('member.store');
     Route::put('/member/{id}', [MemberController::class, 'update'])->name('member.update');
     Route::delete('/member/{id}', [MemberController::class, 'destroy'])->name('member.destroy');
+    Route::post('/members/import', [MemberController::class, 'import'])->name('members.import');
 
     Route::get('/logs', [ActivityLogController::class, 'index'])->name('logs.index');
 
@@ -121,16 +123,7 @@ Route::middleware(['auth', 'role:admin,kasir'])->group(function () {
     Route::get('/laporan/transaksi/{id}', [LaporanTransaksiController::class, 'show'])->name('transaksi.detail');
     Route::get('/laporan/transaksi/print-struk/{id}', [LaporanTransaksiController::class, 'printStruk'])->name('struk.print');
 
-});
-
-
-Route::middleware(['auth', 'role:kasir'])->group(function () {
-    Route::get('/kasirHome', [KasirController::class, 'index'])->name('kasir.dashboard');
-    Route::get('kasirHome/filter-penjualan', [KasirController::class, 'filterPenjualan']);
-
-    // Route::get('/laporan/transaksi', [LaporanTransaksiController::class, 'index'])->name('laporan.transaksi');
-    // Route::get('/laporan/transaksi/{id}', [LaporanTransaksiController::class, 'show'])->name('transaksi.detail');
-
+    
     Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
     Route::get('/penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
     Route::post('/penjualan', [PenjualanController::class, 'store'])->name('penjualan.store');
@@ -142,6 +135,28 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
     Route::get('/pembayaran/create/{penjualan}', [PembayaranController::class, 'create'])->name('pembayaran.create');
     Route::post('/pembayaran/store', [PembayaranController::class, 'store'])->name('pembayaran.store');
+
+});
+
+
+Route::middleware(['auth', 'role:kasir'])->group(function () {
+    Route::get('/kasirHome', [KasirController::class, 'index'])->name('kasir.dashboard');
+    Route::get('kasirHome/filter-penjualan', [KasirController::class, 'filterPenjualan']);
+
+    // Route::get('/laporan/transaksi', [LaporanTransaksiController::class, 'index'])->name('laporan.transaksi');
+    // Route::get('/laporan/transaksi/{id}', [LaporanTransaksiController::class, 'show'])->name('transaksi.detail');
+
+    // Route::get('/penjualan', [PenjualanController::class, 'index'])->name('penjualan.index');
+    // Route::get('/penjualan/create', [PenjualanController::class, 'create'])->name('penjualan.create');
+    // Route::post('/penjualan', [PenjualanController::class, 'store'])->name('penjualan.store');
+    // Route::get('/penjualan/{id}', [PenjualanController::class, 'show'])->name('penjualan.show');
+    // Route::get('/invoice/{id}', [PenjualanController::class, 'invoice'])->name('invoice.show');
+
+
+
+    // Route::get('/pembayaran', [PembayaranController::class, 'index'])->name('pembayaran.index');
+    // Route::get('/pembayaran/create/{penjualan}', [PembayaranController::class, 'create'])->name('pembayaran.create');
+    // Route::post('/pembayaran/store', [PembayaranController::class, 'store'])->name('pembayaran.store');
 
     // Route::get('/invoice/cetak/{id}', [InvoiceController::class, 'cetak'])->name('invoice.cetak');
 });

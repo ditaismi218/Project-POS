@@ -72,6 +72,13 @@
             </div>
         @endif
 
+        @if (session('warning'))
+            <div class="alert alert-warning">
+                {{ session('warning') }}
+            </div>
+        @endif
+
+
 
         <div class="card">
             <h5 class="card-header">Tabel Absensi Kerja</h5>

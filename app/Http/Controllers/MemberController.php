@@ -6,6 +6,8 @@ use App\Models\Member;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MemberImport;
 
 class MemberController extends Controller
 {
@@ -29,6 +31,7 @@ class MemberController extends Controller
     // Menyimpan member baru
     public function store(Request $request)
     {
+        // dd($request->all());
         Log::info('Menerima permintaan untuk menambahkan member baru.', ['data' => $request->all()]);
 
         // Validasi data inputan member
@@ -114,4 +117,32 @@ class MemberController extends Controller
         // Redirect ke halaman daftar member dengan pesan sukses
         return redirect()->route('member.index')->with('success', 'Member berhasil dihapus.');
     }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv',
+        ]);
+    
+        $import = new MemberImport;
+        Excel::import($import, $request->file('file'));
+    
+        $skipped = count($import->skippedRows);
+        $imported = $import->importedCount;
+    
+        if ($imported === 0 && $skipped > 0) {
+            return redirect()->route('member.index')->with([
+                'info' => "$skipped data dilewati karena sudah pernah diinput.",
+            ]);
+        }
+    
+        if ($imported > 0 && $skipped > 0) {
+            return redirect()->route('member.index')->with([
+                'success' => "$imported data berhasil diimport.",
+                'warning' => "$skipped data dilewati karena sudah pernah diinput.",
+            ]);
+        }
+    
+        return redirect()->route('member.index')->with('success', 'Semua data member berhasil diimport.');
+    }    
+
 }

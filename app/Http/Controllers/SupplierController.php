@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\SupplierImport;
 use App\Models\ActivityLog;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;  // Import Log facade
+use Illuminate\Support\Facades\Log;  
+use Maatwebsite\Excel\Facades\Excel;// Import Log facade
 
 class SupplierController extends Controller
 {
@@ -166,5 +168,19 @@ class SupplierController extends Controller
 
         return redirect()->route('supplier.index')->with('success', 'Supplier berhasil dihapus.');
     }
-
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv'
+        ]);
+    
+        $import = new SupplierImport();
+        Excel::import($import, $request->file('file'));
+    
+        return redirect()->route('supplier.index')->with([
+            'success' => "{$import->inserted} data berhasil diimport. {$import->skipped} data dilewati karena duplikat.",
+            'duplicates' => $import->duplicates,
+        ]);
+    }
+    
 }

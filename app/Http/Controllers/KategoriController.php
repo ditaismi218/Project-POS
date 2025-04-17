@@ -82,23 +82,33 @@ class KategoriController extends Controller
     public function update(Request $request, $id)
     {
         $user = Auth::user();
+    
         // Validasi input
         $request->validate([
             'nama_kategori' => 'required|string|max:255',
         ]);
-
+    
         $kategori = KategoriProduk::findOrFail($id);
-
+    
+        // Cek apakah ada kategori dengan nama yang sama selain kategori yang sedang diupdate, baik yang masih aktif maupun yang sudah di-soft delete
+        $kategoriExist = KategoriProduk::where('nama_kategori', $request->nama_kategori)
+                                        ->where('id', '!=', $id)  // Pastikan kategori yang sedang diupdate tidak terhitung
+                                        ->exists();
+    
+        if ($kategoriExist) {
+            return redirect()->route('kategori.index')->with('error', 'Nama kategori sudah ada.');
+        }
+    
         Log::info('Memperbarui kategori.', ['user_id' => $user->id, 'id' => $id, 'nama_lama' => $kategori->nama_kategori, 'nama_baru' => $request->nama_kategori]);
-
+    
         // Update data
         $kategori->update([
             'nama_kategori' => $request->nama_kategori
         ]);
-
+    
         Log::info('Kategori berhasil diperbarui.', ['id' => $id, 'nama_kategori' => $request->nama_kategori]);
-
-        // catat aktivitas update
+    
+        // Catat aktivitas update
         ActivityLog::create([
             'action' => 'Edit Kategori',
             'description' => 'User memperbarui kategori',
@@ -111,9 +121,10 @@ class KategoriController extends Controller
                 'waktu' => now(),
             ]
         ]);
-
+    
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui.');
     }
+        
 
     /**
      * Menghapus kategori berdasarkan ID.

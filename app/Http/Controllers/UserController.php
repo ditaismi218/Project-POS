@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::orderBy('created_at', 'desc')->get();
 
         Log::info('Menampilkan daftar user', ['total_users' => $users->count()]);
         ActivityLog::create([
@@ -140,19 +140,28 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        // Simpan data user sebelum dihapus
+        $userId = $user->id;
+        $userName = $user->name;
+        
         // Log penghapusan user
-        Log::info('Menghapus user', ['user_id' => $user->id, 'name' => $user->name]);
+        Log::info('Menghapus user', ['user_id' => $userId, 'name' => $userName]);
         ActivityLog::create([
             'action' => 'delete',
             'description' => 'Menghapus user',
-            'data' => json_encode(['admin_id' => auth()->id(), 'user_id' => $user->id, 'name' => $user->name])
+            'data' => json_encode([
+                'admin_id' => auth()->id(),
+                'user_id' => $userId,
+                'name' => $userName
+            ])
         ]);
-
+    
         // Hapus user
         $user->delete();
-
-        Log::info('User berhasil dihapus', ['user_id' => $user->id, 'name' => $user->name]);
-
+    
+        Log::info('User berhasil dihapus', ['user_id' => $userId, 'name' => $userName]);
+    
         return redirect()->route('users.index')->with('success', 'User berhasil dihapus');
     }
+    
 }

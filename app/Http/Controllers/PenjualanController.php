@@ -102,6 +102,10 @@ class PenjualanController extends Controller
                 // Ambil stok dari penerimaan_barang berdasarkan FIFO
                 $stok_tersedia = PenerimaanBarang::where('produk_id', $produk_id)
                     ->where('qty', '>', 0)
+                    ->where(function ($q) {
+                        $q->whereNull('expired_date')
+                            ->orWhereDate('expired_date', '>=', now()->toDateString());
+                    })
                     ->orderBy('tgl_masuk', 'asc')
                     ->get();
 
@@ -197,44 +201,62 @@ class PenjualanController extends Controller
     public function create(Request $request)
     {
         $search = $request->input('search');
-    
         $members = Member::all();
-    
-        // Produk untuk tampilan utama (paginate)
+
+        // Produk untuk tampilan utama (paginate), pastikan produk yang expired tidak ditampilkan
         $produk = Produk::whereHas('penerimaanBarang', function ($query) {
-                $query->select('produk_id')
-                    ->groupBy('produk_id')
-                    ->havingRaw('SUM(qty) > 0');
+            $query->where(function ($q) {
+                $q->whereNull('expired_date')
+                    ->orWhereDate('expired_date', '>=', now()->toDateString());
             })
-            ->with(['kategori', 'penerimaanBarang' => function($q) {
-                $q->select('produk_id', 'qty', 'harga_jual', 'tgl_masuk')
-                  ->orderBy('tgl_masuk', 'desc');
-            }])
+                ->groupBy('produk_id')
+                ->havingRaw('SUM(qty) > 0');
+        })
+            ->with([
+                'kategori',
+                'penerimaanBarang' => function ($q) {
+                    $q->select('produk_id', 'qty', 'harga_jual', 'tgl_masuk', 'expired_date')
+                        ->where(function ($sub) {
+                            $sub->whereNull('expired_date')
+                                ->orWhereDate('expired_date', '>=', now()->toDateString());
+                        })
+                        ->orderBy('tgl_masuk', 'desc');
+                }
+            ])
             ->when($search, function ($query, $search) {
-                return $query->where('nama_barang', 'like', "%$search%")
-                             ->orWhere('kode_barang', 'like', "%$search%");
+                return $query->where(function ($q) use ($search) {
+                    $q->where('nama_barang', 'like', "%$search%")
+                        ->orWhere('kode_barang', 'like', "%$search%");
+                });
             })
             ->paginate(12)
             ->appends(['search' => $search]);
-    
-        // Semua produk untuk scanning barcode - DIUBAH
+
+        // Semua produk untuk scanning barcode
         $dataProduk = Produk::whereHas('penerimaanBarang', function ($query) {
-                $query->select('produk_id')
-                    ->groupBy('produk_id')
-                    ->havingRaw('SUM(qty) > 0');
+            $query->where(function ($q) {
+                $q->whereNull('expired_date')
+                    ->orWhereDate('expired_date', '>=', now()->toDateString());
             })
+                ->groupBy('produk_id')
+                ->havingRaw('SUM(qty) > 0');
+        })
             ->with([
                 'kategori',
-                'penerimaanBarang' => function($q) {
-                    $q->select('produk_id', 'qty', 'harga_jual', 'tgl_masuk')
-                      ->orderBy('tgl_masuk', 'desc');
+                'penerimaanBarang' => function ($q) {
+                    $q->select('produk_id', 'qty', 'harga_jual', 'tgl_masuk', 'expired_date')
+                        ->where(function ($sub) {
+                            $sub->whereNull('expired_date')
+                                ->orWhereDate('expired_date', '>=', now()->toDateString());
+                        })
+                        ->orderBy('tgl_masuk', 'desc');
                 }
             ])
             ->get()
             ->map(function ($item) {
                 $totalStok = $item->penerimaanBarang->sum('qty');
                 $latestReceipt = $item->penerimaanBarang->first();
-                
+
                 return [
                     'id' => $item->id,
                     'kode_barang' => $item->kode_barang,
@@ -245,9 +267,11 @@ class PenjualanController extends Controller
                     'kategori' => $item->kategori
                 ];
             });
-    
+
         return view('penjualan.create', compact('members', 'produk', 'search', 'dataProduk'));
     }
+
+
 
     /**
      * Menampilkan detail penjualan berdasarkan ID tertentu.

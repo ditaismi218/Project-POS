@@ -8,6 +8,9 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use App\Exports\LaporanPenjualanExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanPenjualanController extends Controller
 {
@@ -70,6 +73,12 @@ class LaporanPenjualanController extends Controller
         // Ambil daftar kategori produk untuk digunakan dalam dropdown filter
         $kategoriList = KategoriProduk::orderBy('nama_kategori')->get();
 
+         // Mengekspor laporan ke PDF jika parameter export_pdf ada
+         if ($request->has('export_pdf')) {
+            $pdf = PDF::loadView('laporan.penjualan_pdf', compact('laporan', 'totalQty'));
+            return $pdf->download('laporan_penjualan.pdf');
+        }
+
         // Kirim data laporan penjualan ke view
         return view('laporan.penjualan', compact('laporan', 'totalQty', 'kategoriList'));
     }
@@ -97,4 +106,27 @@ class LaporanPenjualanController extends Controller
             'data' => $data
         ]);
     }
+    public function export(Request $request)
+    {
+        $kategori_id = $request->input('kategori');
+
+        $query = Produk::select(
+            'produk.kode_barang',
+            'produk.nama_barang',
+            'kategori_produk.nama_kategori'
+        )
+            ->join('detail_penjualan', 'produk.id', '=', 'detail_penjualan.produk_id')
+            ->join('kategori_produk', 'produk.kategori_id', '=', 'kategori_produk.id')
+            ->selectRaw('SUM(detail_penjualan.qty) as total_terjual')
+            ->groupBy('produk.id', 'produk.kode_barang', 'produk.nama_barang', 'kategori_produk.nama_kategori');
+
+        if (!empty($kategori_id)) {
+            $query->where('produk.kategori_id', $kategori_id);
+        }
+
+        $laporan = $query->orderByDesc('total_terjual')->get();
+
+        return Excel::download(new LaporanPenjualanExport($laporan), 'laporan_penjualan.xlsx');
+    }
+
 }
